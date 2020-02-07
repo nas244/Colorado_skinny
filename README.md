@@ -1,1 +1,2 @@
-# Colorado_skinny
+# Colorado Skinny:
+Air Hockey Novice
