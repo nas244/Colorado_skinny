@@ -101,3 +101,5 @@ function drawShadow(...)
   love.graphics.setColor(r,g,b,a)
   func(unpack(args))
 end
+
+-- Load an image and 
