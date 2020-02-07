@@ -1,1 +1,1 @@
-"C:/Program Files/LOVE/lovec.exe" ./
+"64/love.exe" ./
