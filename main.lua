@@ -1,5 +1,7 @@
 Class = require("libs.hump.class")
+Vector = require "libs.hump.vector"
 Bump = require("libs.bump.bump")
+
 require("libs.useful")
 
 -- Set up window table with information
@@ -39,6 +41,19 @@ end
 keyp = {}
 keyh = {}
 
+-- Mouse movement table
+mouse = Vector(0,0)
+
+-- Update mouse table every mouse move
+function love.mousemoved( x, y, dx, dy, istouch )
+  local newMouse = Vector(dx, dy)
+  if newMouse:len() > 1 then
+    mouse = newMouse
+  else
+    mouse.x, mouse.y = 0, 0
+  end
+end
+
 -- Runs on load
 function love.load()
   -- Disable linear filtering (i hate that crap)
@@ -46,7 +61,7 @@ function love.load()
   --  love.keyboard.setKeyRepeat(true)
   
   -- Colorado Skinny Visits The Stars
-  love.window.setTitle( "Colorado Skinny" )
+  love.window.setTitle( "Colorado Skinny - Air Hockey Novice" )
   
   -- Set our window to the right size, adjusting for our current scale
   love.window.setMode(window.width * window.scale, window.height * window.scale)
@@ -54,16 +69,24 @@ function love.load()
   -- Create a canvas, without scaling
 	Canvas = love.graphics.newCanvas(window.width, window.height)
   
+  font = love.graphics.newFont("assets/scoreboard.ttf", 60)
+  love.graphics.setFont(font)
+  
   -- Set up our action table
 	actions = {}
+  
+  -- Get that mouse going!
+  love.mouse.setRelativeMode(true)
   
   -- Overall game timer for fun (and sin functions)
   gameTime = 0
   
   -- Get our game controller
   Game = require("entities.game")
-  Game.init()
+  Game:init()
 end
+
+mouseDraw = {x = 0, y = 0}
 
 function love.update(dt)
   gameTime = gameTime + 1
@@ -71,9 +94,13 @@ function love.update(dt)
   -- Actions
   actions.test = keyp.f
   
-  Game.update()
+  Game:update()
   
   keyp = {}
+  
+  mouseDraw.x, mouseDraw.y = mouse.x, mouse.y
+  
+  mouse.x, mouse.y = 0, 0
 end
 
 function love.draw(dt)
@@ -82,7 +109,10 @@ function love.draw(dt)
 	love.graphics.scale(1)
 	love.graphics.clear()
   
-  Game.draw()
+  Game:draw()
+  
+  local xx, yy = window.width / 2, window.height / 2
+  love.graphics.line(xx, yy, xx + mouseDraw.x, yy + mouseDraw.y )
   
 	love.graphics.scale(window.scale)
   love.graphics.setCanvas()
