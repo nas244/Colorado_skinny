@@ -1,34 +1,65 @@
+Bump = require "libs.bump.bump"
+
 -- Overall game controller
 
 Game = Class{
   init = function(self)
     -- Defined globally /shrug
+    local puckDir = love.math.random(math.pi * 2)
     puck = {
       img = love.graphics.newImage("assets/ball.png"),
-      x = 0,
-      y = 0,
-      dx = 10,
-      dy = 10,
+      name = "puck",
+      x = window.width / 2,
+      y = window.height / 2,
+      dx = math.cos(puckDir) * 5,
+      dy = math.sin(puckDir) * 5,
     }
+    
     puck.w, puck.h = puck.img:getWidth(), puck.img:getHeight()
+    
+    -- Set up our world
+    world = Bump.newWorld()
+    
+    world:add(puck, puck.x, puck.y, puck.w, puck.h)
+    
+    function makeWall(x,y,w,h)
+      return {x = x, y = y, w = w, h = h}
+    end
+    
+    walls = {
+      top = makeWall(0,0,window.width,16),
+      bottom = makeWall(0,window.height - 16, window.width, 16),
+      leftTop = makeWall(0,16, 16, window.height - 32),
+      rightTop = makeWall(window.width - 16,16, 16, window.height - 32),
+    }
+    
+    for k,v in pairs(walls) do
+      world:add(v, v.x, v.y, v.w, v.h)
+    end
   end,
   
   update = function(self)
-    puck.x = puck.x + puck.dx
-    puck.y = puck.y + puck.dy
+    local goalX, goalY = puck.x + puck.dx, puck.y + puck.dy
     
-    if puck.x < 0 or puck.x > window.width - puck.w then
-      puck.x = clamp(puck.x, 0, window.width - puck.w)
-      puck.dx = -puck.dx
-    end
+    local actualX, actualY, cols, len = world:move(puck, goalX, goalY, function() return "bounce" end)
+    puck.x , puck.y = actualX, actualY
     
-    if puck.y < 0 or puck.y > window.height - puck.h then
-      puck.y = clamp(puck.y, 0, window.height - puck.h)
-      puck.dy = -puck.dy
+    for i, col in ipairs(cols) do
+      if contains(walls, col.other) then
+        if col.normal.x ~= 0 then
+          puck.dx = -puck.dx
+        else
+          puck.dy = -puck.dy
+        end
+      end
     end
   end,
   
   draw = function(self)
+    for k,v in pairs(walls) do
+      love.graphics.rectangle("fill", v.x, v.y, v.w, v.h)
+    end
+    
     love.graphics.draw(puck.img, puck.x, puck.y)
   end
 }

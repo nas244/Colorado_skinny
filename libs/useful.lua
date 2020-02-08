@@ -102,4 +102,12 @@ function drawShadow(...)
   func(unpack(args))
 end
 
--- Load an image and 
+-- If table contains a value
+function contains(tab, val)
+  for k, v in pairs(tab) do
+    if v == val then
+      return true
+    end
+  end
+  return false
+end
