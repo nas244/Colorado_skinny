@@ -2,26 +2,82 @@ Vector = require "libs.hump.vector"
 Bump = require "libs.bump.bump"
 
 -- Overall game controller
+world = Bump.newWorld()
+
+-- Ensure that image only loads once
+puckImage = love.graphics.newImage("assets/ball.png")
+
+Puck = Class{
+  init = function(self)
+    self.img = puckImage
+    self.name = "puck"
+    self.x = window.width / 2
+    self.y = window.height / 2
+    self.movement = Vector.randomDirection() * 5
+    self.speed = 5
+    self.h = self.img:getWidth()
+    self.w = self.h
+    
+    world:add(self, self.x, self.y, self.w, self.h)
+  end,
+  
+  update = function(self)
+    -- Take mouse movement, trim movements to 10 times mouse speed and scale down by ten
+    local normMouse = Vector(mouse.x, mouse.y):trimmed(self.speed * 10) / 10
+    
+    -- Next, add mouse movement to puck movement and then clamp magnitude to max puck speed
+    local newMove = (self.movement + normMouse):trimmed(self.speed)
+    
+    -- Set puck movement to new movement
+    self.movement = newMove
+    
+    local goalX, goalY = (Vector(self.x, self.y) + self.movement):unpack()
+    
+    local actualX, actualY, cols, len = world:move(self, goalX, goalY, function() return "bounce" end)
+    self.x , self.y = actualX, actualY
+    
+    for i, col in ipairs(cols) do
+      if contains(walls, col.other) then
+        self.movement = self.movement:mirrorOn(Vector(col.normal.x, col.normal.y):perpendicular())
+      end
+    end
+    
+    -- If the puck has gone outside of the play area
+    local outDist = self.w * 2
+    if self.x < -outDist or self.x > window.width + outDist or self.y < -outDist or self.y > window.height + outDist then
+      -- Remove puck from physics
+      world:remove(self)
+      
+      -- Set global reference to puck to be a new puck
+      puck = Puck()
+      
+      -- Increase left mallet's score
+      leftMallet.score = leftMallet.score + 1
+      
+      -- Probably unnecessary since the garbage collector should take care of it,
+      --  but go ahead and unreference the old puck object directly anyway
+      self = nil
+    end
+  end,
+}
 
 Game = Class{
   init = function(self)
     -- Defined globally /shrug
-    puck = {
+    puck = Puck()
+    
+    -- Just a table for now, probably will change later
+    leftMallet = {
       img = love.graphics.newImage("assets/ball.png"),
-      name = "puck",
-      x = window.width / 2,
+      name = "leftMallet",
+      x = window.width / 4,
       y = window.height / 2,
-      movement = Vector.randomDirection() * 5,
-      speed = 5,
+      movement = Vector(),
+      speed = 0,
+      score = 0,
     }
     
-    puck.w, puck.h = puck.img:getWidth(), puck.img:getHeight()
-    
-    -- Set up our world
-    world = Bump.newWorld()
-    
-    world:add(puck, puck.x, puck.y, puck.w, puck.h)
-    
+    -- Let's get some WALLS goin
     function makeWall(x,y,w,h)
       return {x = x, y = y, w = w, h = h}
     end
@@ -43,25 +99,7 @@ Game = Class{
   end,
   
   update = function(self)
-    local normMouse = Vector(mouse.x, mouse.y):trimmed(puck.speed * 10) / 10
-    local newMove = (puck.movement + normMouse):trimmed(puck.speed)
-    puck.movement = newMove
-    
-    local goalX, goalY = (Vector(puck.x, puck.y) + puck.movement):unpack()
-    
-    local actualX, actualY, cols, len = world:move(puck, goalX, goalY, function() return "bounce" end)
-    puck.x , puck.y = actualX, actualY
-    
-    for i, col in ipairs(cols) do
-      if contains(walls, col.other) then
-        puck.movement = puck.movement:mirrorOn(Vector(col.normal.x, col.normal.y):perpendicular())
-      end
-    end
-    
-    local outDist = puck.w * 2
-    if puck.x < -outDist or puck.x > window.width + outDist or puck.y < -outDist or puck.y > window.height + outDist then
-      self:init()
-    end
+    puck:update()
   end,
   
   draw = function(self)
@@ -73,7 +111,7 @@ Game = Class{
     
     love.graphics.setColor(1,1,1)
     love.graphics.draw(puck.img, puck.x, puck.y)
-    love.graphics.print("Font Test 2010", 0, 0)
+    love.graphics.print(tostring(leftMallet.score), 16, 8)
   end
 }
 

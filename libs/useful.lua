@@ -60,6 +60,8 @@ end
 function tableToStr(name)
   if name == nil then
     return nil
+  elseif type(name) ~= "table" then
+    return tostring(name)
   end
   
   function keyPrep(key)

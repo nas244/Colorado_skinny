@@ -47,11 +47,13 @@ mouse = Vector(0,0)
 -- Update mouse table every mouse move
 function love.mousemoved( x, y, dx, dy, istouch )
   local newMouse = Vector(dx, dy)
-  if newMouse:len() > 1 then
+  
+  -- Optional if statement to limit mouse movement to 
+  --   only larger movements to prevent extremely small
+  --   twitches from affecting gameplay
+  --if newMouse:len() > 1 then
     mouse = newMouse
-  else
-    mouse.x, mouse.y = 0, 0
-  end
+  --end
 end
 
 -- Runs on load
@@ -86,6 +88,7 @@ function love.load()
   Game:init()
 end
 
+-- Line for mouse drawing
 mouseDraw = {x = 0, y = 0}
 
 function love.update(dt)
@@ -94,12 +97,20 @@ function love.update(dt)
   -- Actions
   actions.test = keyp.f
   
+  -- Update our game function
   Game:update()
   
+  -- Reset keypresses
   keyp = {}
   
+  -- Update info for drawing the mouse lines
   mouseDraw.x, mouseDraw.y = mouse.x, mouse.y
   
+  -- Reset mouse at end of every frame
+  --   This is because of an issue I've found with my mouse,
+  --   where if you accelerate quickly and then lift the mouse,
+  --   Love2D won't call love.mousemoved, so the fast movement
+  --   will remain as the last move indefinitely
   mouse.x, mouse.y = 0, 0
 end
 
