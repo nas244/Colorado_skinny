@@ -7,8 +7,8 @@ require("libs.useful")
 -- Set up window table with information
 --  Width/height are BEFORE scaling
 window = {
-  width = 640,
-  height = 360,
+  width = 1280,
+  height = 720,
   scale = 1
 }
 
@@ -59,7 +59,7 @@ end
 -- Runs on load
 function love.load()
   -- Disable linear filtering (i hate that crap)
-	love.graphics.setDefaultFilter("nearest","nearest",1)
+	love.graphics.setDefaultFilter("linear","linear",16)
   --  love.keyboard.setKeyRepeat(true)
   
   -- Colorado Skinny Visits The Stars

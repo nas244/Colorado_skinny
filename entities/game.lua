@@ -2,21 +2,25 @@ Vector = require "libs.hump.vector"
 Bump = require "libs.bump.bump"
 
 -- Overall game controller
-world = Bump.newWorld()
+
 
 -- Ensure that image only loads once
-puckImage = love.graphics.newImage("assets/ball.png")
+puckImage = love.graphics.newImage("assets/red_puck.png")
 
 Puck = Class{
   init = function(self)
     self.img = puckImage
     self.name = "puck"
-    self.x = window.width / 2
-    self.y = window.height / 2
-    self.movement = Vector.randomDirection() * 5
-    self.speed = 5
+    
     self.h = self.img:getWidth()
     self.w = self.h
+    
+    self.x = window.width / 2 - self.w / 2
+    self.y = window.height / 2 - self.h / 2
+    
+    self.speed = 10
+    self.movement = Vector.randomDirection() * self.speed
+    
     
     world:add(self, self.x, self.y, self.w, self.h)
   end,
@@ -63,6 +67,8 @@ Puck = Class{
 
 Game = Class{
   init = function(self)
+    world = Bump.newWorld()
+    
     -- Defined globally /shrug
     puck = Puck()
     
@@ -110,7 +116,9 @@ Game = Class{
     end
     
     love.graphics.setColor(1,1,1)
-    love.graphics.draw(puck.img, puck.x, puck.y)
+    
+    local ox, oy = puck.img:getWidth() / 2, puck.img:getHeight() / 2
+    love.graphics.draw(puck.img, puck.x + ox, puck.y + oy, 0, 1, 1, ox, oy)
     love.graphics.print(tostring(leftMallet.score), 16, 8)
   end
 }
