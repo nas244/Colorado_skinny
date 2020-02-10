@@ -6,27 +6,27 @@ Bump = require "libs.bump.bump"
 
 -- Ensure that image only loads once
 puckImage = love.graphics.newImage("assets/red_puck.png")
+back = love.graphics.newImage("assets/board.png")
 
 Puck = Class{
   init = function(self)
     self.img = puckImage
     self.name = "puck"
     
-    self.h = self.img:getWidth()
+    self.h = self.img:getWidth() - 10
     self.w = self.h
     
     self.x = window.width / 2 - self.w / 2
     self.y = window.height / 2 - self.h / 2
     
-    self.speed = 10
+    self.speed = 20
     self.movement = Vector.randomDirection() * self.speed
-    
     
     world:add(self, self.x, self.y, self.w, self.h)
   end,
   
   update = function(self)
-    -- Take mouse movement, trim movements to 10 times mouse speed and scale down by ten
+    -- Take mouse movement, trim movements to 10 times max speed and scale down by ten
     local normMouse = Vector(mouse.x, mouse.y):trimmed(self.speed * 10) / 10
     
     -- Next, add mouse movement to puck movement and then clamp magnitude to max puck speed
@@ -41,8 +41,27 @@ Puck = Class{
     self.x , self.y = actualX, actualY
     
     for i, col in ipairs(cols) do
-      if contains(walls, col.other) then
-        self.movement = self.movement:mirrorOn(Vector(col.normal.x, col.normal.y):perpendicular())
+      local other = col.other
+      if contains(walls, other) then
+        local realX, realY = puck.x + puck.w / 2, puck.y + puck.h / 2
+        
+        local norm = col.normal
+        
+        local x,y,w,h = world:getRect(other)
+        local nearX, nearY = Bump.rect.getNearestCorner( x,y,w,h, realX, realY)
+        local cornerToPuck = Vector(realX - nearX, realY - nearY)
+        
+        -- If we're on one of the corners, and the angle to the puck is less than 45 degrees
+        --   (because if we run corner bouncing at an almost 90 degree angle from the center
+        --    of the puck to the corner, we get real weird interactions and nonsense bouncing)
+        if (realX < other.x or realX > other.x + other.w) and (realY < other.y or realY > other.y + other.h)
+          and cornerToPuck:angleTo(norm) < math.pi / 4 then
+            local currentSpeed = self.movement:len()
+            local cornerBounce = cornerToPuck:trimmed(currentSpeed)
+            self.movement = cornerBounce
+        else
+          self.movement = self.movement:mirrorOn(Vector(norm.x, norm.y):perpendicular())
+        end
       end
     end
     
@@ -90,13 +109,15 @@ Game = Class{
     
     local wallHeight = window.height / 3
     
+    puckOut = 16
+    
     walls = {
       top = makeWall(0,0,window.width,16),
       bot = makeWall(0,window.height - 16, window.width, 16),
-      leftTop = makeWall(0, 16, 16, wallHeight),
-      leftBot = makeWall(0, window.height - wallHeight - 16, 16, wallHeight),
-      rightTop = makeWall(window.width - 16,16, 16, wallHeight),
-      rightBot = makeWall(window.width - 16, window.height - wallHeight - 16, 16, wallHeight),
+      leftTop = makeWall(-puckOut, 16, 16 + puckOut, wallHeight),
+      leftBot = makeWall(-puckOut, window.height - wallHeight - 16, 16 + puckOut, wallHeight),
+      rightTop = makeWall(window.width - 16,16, 16 + puckOut, wallHeight),
+      rightBot = makeWall(window.width - 16, window.height - wallHeight - 16, 16 + puckOut, wallHeight),
     }
     
     for k,v in pairs(walls) do
@@ -118,7 +139,7 @@ Game = Class{
     love.graphics.setColor(1,1,1)
     
     local ox, oy = puck.img:getWidth() / 2, puck.img:getHeight() / 2
-    love.graphics.draw(puck.img, puck.x + ox, puck.y + oy, 0, 1, 1, ox, oy)
+    love.graphics.draw(puck.img, puck.x + puck.w / 2, puck.y + puck.h / 2, 0.5, 1, 1, ox, oy)
     love.graphics.print(tostring(leftMallet.score), 16, 8)
   end
 }
