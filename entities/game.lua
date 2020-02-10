@@ -19,7 +19,7 @@ Puck = Class{
     self.x = window.width / 2 - self.w / 2
     self.y = window.height / 2 - self.h / 2
     
-    self.speed = 20
+    self.speed = 10
     self.movement = Vector.randomDirection() * self.speed
     
     world:add(self, self.x, self.y, self.w, self.h)
@@ -51,11 +51,13 @@ Puck = Class{
         local nearX, nearY = Bump.rect.getNearestCorner( x,y,w,h, realX, realY)
         local cornerToPuck = Vector(realX - nearX, realY - nearY)
         
-        -- If we're on one of the corners, and the angle to the puck is less than 45 degrees
-        --   (because if we run corner bouncing at an almost 90 degree angle from the center
-        --    of the puck to the corner, we get real weird interactions and nonsense bouncing)
+        local angleDiff = math.abs(cornerToPuck:angleTo(norm)) % math.pi
+        
+        -- If we're on one of the corners, and the angle to the puck is less than 90 degrees
+        --   (because there are situations where the number is more than 90 which doesn't make sense
+        --    and causes bizarre interactions)
         if (realX < other.x or realX > other.x + other.w) and (realY < other.y or realY > other.y + other.h)
-          and cornerToPuck:angleTo(norm) < math.pi / 4 then
+          and angleDiff < math.pi / 2 then
             local currentSpeed = self.movement:len()
             local cornerBounce = cornerToPuck:trimmed(currentSpeed)
             self.movement = cornerBounce
@@ -109,7 +111,7 @@ Game = Class{
     
     local wallHeight = window.height / 3
     
-    puckOut = 16
+    puckOut = 32
     
     walls = {
       top = makeWall(0,0,window.width,16),
@@ -130,6 +132,9 @@ Game = Class{
   end,
   
   draw = function(self)
+    love.graphics.setColor(1,1,1,0.5)
+    love.graphics.draw(back,0,0)
+    
     for k,v in pairs(walls) do
       -- Set up random colors based on position and size
       love.graphics.setColor(v.x / window.width, (v.h + v.y) / window.height, v.w / window.width, 0.8)
@@ -139,8 +144,12 @@ Game = Class{
     love.graphics.setColor(1,1,1)
     
     local ox, oy = puck.img:getWidth() / 2, puck.img:getHeight() / 2
-    love.graphics.draw(puck.img, puck.x + puck.w / 2, puck.y + puck.h / 2, 0.5, 1, 1, ox, oy)
-    love.graphics.print(tostring(leftMallet.score), 16, 8)
+    drawShadow(love.graphics.draw, puck.img, puck.x + puck.w / 2, puck.y + puck.h / 2, 0.5, 1, 1, ox, oy)
+    
+    love.graphics.setColor(1,0.2,0.2)
+    drawShadow(love.graphics.print, tostring(leftMallet.score), 16, 8)
+    
+    love.graphics.setColor(1,1,1)
   end
 }
 

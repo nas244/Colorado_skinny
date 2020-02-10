@@ -123,7 +123,7 @@ function love.draw(dt)
   Game:draw()
   
   local xx, yy = window.width / 2, window.height / 2
-  love.graphics.line(xx, yy, xx + mouseDraw.x, yy + mouseDraw.y )
+  love.graphics.line(xx, yy, xx + mouseDraw.x * 5 , yy + mouseDraw.y * 5 )
   
 	love.graphics.scale(window.scale)
   love.graphics.setCanvas()
