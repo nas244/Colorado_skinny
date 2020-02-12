@@ -1,28 +1,38 @@
 Vector = require "libs.hump.vector"
 Bump = require "libs.bump.bump"
-
 -- Overall game controller
 
+Puck = require "entities.puck"
 
 -- Ensure that image only loads once
 puckImage = love.graphics.newImage("assets/red_puck.png")
 back = love.graphics.newImage("assets/board.png")
 
-Puck = Class{
+LeftMallet = Class{
   init = function(self)
     self.img = puckImage
-    self.name = "puck"
+    self.name = "leftMallet"
     
     self.h = self.img:getWidth() - 10
     self.w = self.h
     
-    self.x = window.width / 2 - self.w / 2
-    self.y = window.height / 2 - self.h / 2
+    self.x = window.width / 4 - self.w / 2
+    self.y = window.height / 4 - self.h / 2
     
     self.speed = 10
-    self.movement = Vector.randomDirection() * self.speed
+    self.movement = Vector()
+    
+    self.score = 0
     
     world:add(self, self.x, self.y, self.w, self.h)
+  end,
+  
+  filter = function(item, other)
+    if contains(walls, other) then
+      return "slide"
+    else
+      return "bounce"
+    end
   end,
   
   update = function(self)
@@ -37,52 +47,8 @@ Puck = Class{
     
     local goalX, goalY = (Vector(self.x, self.y) + self.movement):unpack()
     
-    local actualX, actualY, cols, len = world:move(self, goalX, goalY, function() return "bounce" end)
+    local actualX, actualY, cols, len = world:move(self, goalX, goalY, self.filter)
     self.x , self.y = actualX, actualY
-    
-    for i, col in ipairs(cols) do
-      local other = col.other
-      if contains(walls, other) then
-        local realX, realY = puck.x + puck.w / 2, puck.y + puck.h / 2
-        
-        local norm = col.normal
-        
-        local x,y,w,h = world:getRect(other)
-        local nearX, nearY = Bump.rect.getNearestCorner( x,y,w,h, realX, realY)
-        local cornerToPuck = Vector(realX - nearX, realY - nearY)
-        
-        local angleDiff = math.abs(cornerToPuck:angleTo(norm)) % math.pi
-        
-        -- If we're on one of the corners, and the angle to the puck is less than 90 degrees
-        --   (because there are situations where the number is more than 90 which doesn't make sense
-        --    and causes bizarre interactions)
-        if (realX < other.x or realX > other.x + other.w) and (realY < other.y or realY > other.y + other.h)
-          and angleDiff < math.pi / 2 then
-            local currentSpeed = self.movement:len()
-            local cornerBounce = cornerToPuck:trimmed(currentSpeed)
-            self.movement = cornerBounce
-        else
-          self.movement = self.movement:mirrorOn(Vector(norm.x, norm.y):perpendicular())
-        end
-      end
-    end
-    
-    -- If the puck has gone outside of the play area
-    local outDist = self.w * 2
-    if self.x < -outDist or self.x > window.width + outDist or self.y < -outDist or self.y > window.height + outDist then
-      -- Remove puck from physics
-      world:remove(self)
-      
-      -- Set global reference to puck to be a new puck
-      puck = Puck()
-      
-      -- Increase left mallet's score
-      leftMallet.score = leftMallet.score + 1
-      
-      -- Probably unnecessary since the garbage collector should take care of it,
-      --  but go ahead and unreference the old puck object directly anyway
-      self = nil
-    end
   end,
 }
 
@@ -92,16 +58,9 @@ Game = Class{
     
     -- Defined globally /shrug
     puck = Puck()
-    
-    -- Just a table for now, probably will change later
-    leftMallet = {
-      img = love.graphics.newImage("assets/ball.png"),
-      name = "leftMallet",
-      x = window.width / 4,
-      y = window.height / 2,
-      movement = Vector(),
-      speed = 0,
-      score = 0,
+    leftMallet = LeftMallet()
+    mallets = {
+      lm = leftMallet
     }
     
     -- Let's get some WALLS goin
@@ -129,6 +88,7 @@ Game = Class{
   
   update = function(self)
     puck:update()
+    leftMallet:update()
   end,
   
   draw = function(self)
@@ -145,6 +105,8 @@ Game = Class{
     
     local ox, oy = puck.img:getWidth() / 2, puck.img:getHeight() / 2
     drawShadow(love.graphics.draw, puck.img, puck.x + puck.w / 2, puck.y + puck.h / 2, 0.5, 1, 1, ox, oy)
+    drawShadow(love.graphics.draw, leftMallet.img, leftMallet.x + leftMallet.w / 2, leftMallet.y + leftMallet.h / 2,
+      0.5, 1, 1, ox, oy)
     
     love.graphics.setColor(1,0.2,0.2)
     drawShadow(love.graphics.print, tostring(leftMallet.score), 16, 8)
