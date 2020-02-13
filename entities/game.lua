@@ -1,5 +1,5 @@
 Vector = require "libs.hump.vector"
-Bump = require "libs.bump.bump"
+wf = require "libs.windfield"
 -- Overall game controller
 
 Puck = require "entities.puck"
@@ -11,7 +11,13 @@ back = love.graphics.newImage("assets/Board_Min_Marked.png")
 
 Game = Class{
   init = function(self)
-    world = Bump.newWorld()
+    world = wf.newWorld(0, 0, true)
+    
+    world:addCollisionClass("Wall")
+    world:addCollisionClass("Score")
+    world:addCollisionClass("Middle")
+    world:addCollisionClass("Puck", {ignores = {"Middle"}})
+    world:addCollisionClass("Mallet", {ignores = {"Middle"}})
     
     -- Defined globally /shrug
     puck = Puck()
@@ -21,9 +27,12 @@ Game = Class{
     }
     
     -- Let's get some WALLS goin
-    function makeWall(x,y,w,h)
-      local myWall = {x = x, y = y, w = w, h = h}
-      world:add(myWall, x, y, w, h)
+    function makeWall(x,y,w,h,name)
+      local myWall = world:newRectangleCollider(x, y, w, h)
+      myWall:setType("static")
+      myWall:setCollisionClass(name or "Wall")
+      myWall:setRestitution(0.5)
+      
       return myWall
     end
     
@@ -41,13 +50,14 @@ Game = Class{
     }
     
     local midWidth = 32
-    midWall = makeWall(window.width / 2 - midWidth / 2, 0, midWidth, window.height)
+    midWall = makeWall(window.width / 2 - midWidth / 2, 0, midWidth, window.height, "Middle")
     
   end,
   
-  update = function(self)
+  update = function(self, dt)
     leftMallet:update()
     puck:update()
+    world:update(dt)
   end,
   
   draw = function(self)
@@ -59,21 +69,15 @@ Game = Class{
     love.graphics.draw(back,0,0)
     love.graphics.origin()
     
-    for k,v in pairs(walls) do
-      -- Set up random colors based on position and size
-      love.graphics.setColor(v.x / window.width, (v.h + v.y) / window.height, v.w / window.width, 0.8)
-      love.graphics.rectangle("fill", v.x, v.y, v.w, v.h)
-    end
-    
     love.graphics.setColor(1,1,1)
     
-    local ox, oy = puck.img:getWidth() / 2, puck.img:getHeight() / 2
-    drawShadow(love.graphics.draw, puck.img, puck.x + puck.w / 2, puck.y + puck.h / 2, 0.5, 1, 1, ox, oy)
-    drawShadow(love.graphics.draw, leftMallet.img, leftMallet.x + leftMallet.w / 2, leftMallet.y + leftMallet.h / 2,
-      0.5, 1, 1, ox, oy)
+    puck:draw()
+    leftMallet:draw()
     
     love.graphics.setColor(1,0.2,0.2)
     drawShadow(love.graphics.print, "hi there" .. tostring(leftMallet.score), 16, 8)
+    
+    world:draw(128)
     
     love.graphics.setColor(1,1,1)
   end

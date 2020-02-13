@@ -98,7 +98,7 @@ function love.update(dt)
   actions.test = keyp.f
   
   -- Update our game function
-  Game:update()
+  Game:update(dt)
   
   -- Reset keypresses
   keyp = {}
