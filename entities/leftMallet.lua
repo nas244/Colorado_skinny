@@ -20,6 +20,7 @@ LeftMallet = Class{
     self.collider = world:newCircleCollider(self.x + self.w / 2, self.y + self.h / 2, self.w / 2)
     self.collider:setCollisionClass("Mallet")
     self.collider:setMass(10)
+    self.collider:setLinearDamping(10)
   end,
   
   update = function(self)
@@ -27,7 +28,7 @@ LeftMallet = Class{
     local normMouse = Vector(mouse.x, mouse.y):trimmed(self.speed * 10) / 10
     
     -- Next, add mouse movement to puck movement and then clamp magnitude to max puck speed
-    local newMove = normMouse:trimmed(self.speed) * 100
+    local newMove = normMouse:trimmed(self.speed) * 500
     
     self.collider:applyLinearImpulse(newMove.x, newMove.y)
   end,

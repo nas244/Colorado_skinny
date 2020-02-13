@@ -61,7 +61,7 @@ Game = Class{
   end,
   
   draw = function(self)
-    love.graphics.setColor(1,1,1,0.5)
+    love.graphics.setColor(1,1,1,0.9)
     
     local backScale = window.width / back:getWidth()
     
@@ -77,6 +77,8 @@ Game = Class{
     love.graphics.setColor(1,0.2,0.2)
     drawShadow(love.graphics.print, "hi there" .. tostring(leftMallet.score), 16, 8)
     
+    love.graphics.setLineWidth(5)
+    love.graphics.setColor(0,0,0)
     world:draw(128)
     
     love.graphics.setColor(1,1,1)

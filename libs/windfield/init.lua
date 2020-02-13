@@ -77,9 +77,9 @@ function World:draw(alpha)
     -- get the current color values to reapply
     local r, g, b, a = love.graphics.getColor()
     -- alpha value is optional
-    alpha = alpha or 255
+    alpha = alpha or 1
     -- Colliders debug
-    love.graphics.setColor(222, 222, 222, alpha)
+    love.graphics.setColor(r, g, b, alpha)
     local bodies = self.box2d_world:getBodies()
     for _, body in ipairs(bodies) do
         local fixtures = body:getFixtures()
