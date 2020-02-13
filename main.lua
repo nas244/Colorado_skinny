@@ -117,7 +117,6 @@ end
 function love.draw(dt)
 	love.graphics.setDefaultFilter("nearest","nearest",1)
   love.graphics.setCanvas(Canvas)
-	love.graphics.scale(1)
 	love.graphics.clear()
   
   Game:draw()

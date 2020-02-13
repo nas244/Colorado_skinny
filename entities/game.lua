@@ -3,54 +3,11 @@ Bump = require "libs.bump.bump"
 -- Overall game controller
 
 Puck = require "entities.puck"
+LeftMallet = require "entities.leftMallet"
 
 -- Ensure that image only loads once
 puckImage = love.graphics.newImage("assets/red_puck.png")
-back = love.graphics.newImage("assets/board.png")
-
-LeftMallet = Class{
-  init = function(self)
-    self.img = puckImage
-    self.name = "leftMallet"
-    
-    self.h = self.img:getWidth() - 10
-    self.w = self.h
-    
-    self.x = window.width / 4 - self.w / 2
-    self.y = window.height / 4 - self.h / 2
-    
-    self.speed = 10
-    self.movement = Vector()
-    
-    self.score = 0
-    
-    world:add(self, self.x, self.y, self.w, self.h)
-  end,
-  
-  filter = function(item, other)
-    if contains(walls, other) then
-      return "slide"
-    else
-      return "bounce"
-    end
-  end,
-  
-  update = function(self)
-    -- Take mouse movement, trim movements to 10 times max speed and scale down by ten
-    local normMouse = Vector(mouse.x, mouse.y):trimmed(self.speed * 10) / 10
-    
-    -- Next, add mouse movement to puck movement and then clamp magnitude to max puck speed
-    local newMove = (self.movement + normMouse):trimmed(self.speed)
-    
-    -- Set puck movement to new movement
-    self.movement = newMove
-    
-    local goalX, goalY = (Vector(self.x, self.y) + self.movement):unpack()
-    
-    local actualX, actualY, cols, len = world:move(self, goalX, goalY, self.filter)
-    self.x , self.y = actualX, actualY
-  end,
-}
+back = love.graphics.newImage("assets/Board_Min_Marked.png")
 
 Game = Class{
   init = function(self)
@@ -70,11 +27,11 @@ Game = Class{
     
     local wallHeight = window.height / 3
     
-    puckOut = 32
+    puckOut = 64
     
     walls = {
-      top = makeWall(0,0,window.width,16),
-      bot = makeWall(0,window.height - 16, window.width, 16),
+      top = makeWall(0,-puckOut,window.width,16 + puckOut),
+      bot = makeWall(0,window.height - 16, window.width, 16 + puckOut),
       leftTop = makeWall(-puckOut, 16, 16 + puckOut, wallHeight),
       leftBot = makeWall(-puckOut, window.height - wallHeight - 16, 16 + puckOut, wallHeight),
       rightTop = makeWall(window.width - 16,16, 16 + puckOut, wallHeight),
@@ -87,13 +44,18 @@ Game = Class{
   end,
   
   update = function(self)
-    puck:update()
     leftMallet:update()
+    puck:update()
   end,
   
   draw = function(self)
     love.graphics.setColor(1,1,1,0.5)
+    
+    local backScale = window.width / back:getWidth()
+    
+    love.graphics.scale(backScale)
     love.graphics.draw(back,0,0)
+    love.graphics.origin()
     
     for k,v in pairs(walls) do
       -- Set up random colors based on position and size
@@ -109,7 +71,7 @@ Game = Class{
       0.5, 1, 1, ox, oy)
     
     love.graphics.setColor(1,0.2,0.2)
-    drawShadow(love.graphics.print, tostring(leftMallet.score), 16, 8)
+    drawShadow(love.graphics.print, "hi there" .. tostring(leftMallet.score), 16, 8)
     
     love.graphics.setColor(1,1,1)
   end
