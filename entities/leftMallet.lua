@@ -24,7 +24,7 @@ LeftMallet = Class{
   end,
   
   filter = function(item, other)
-    if contains(walls, other) then
+    if contains(walls, other) or other == midWall then
       return "slide"
     else
       return "bounce"

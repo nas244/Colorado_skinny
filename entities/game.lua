@@ -22,7 +22,9 @@ Game = Class{
     
     -- Let's get some WALLS goin
     function makeWall(x,y,w,h)
-      return {x = x, y = y, w = w, h = h}
+      local myWall = {x = x, y = y, w = w, h = h}
+      world:add(myWall, x, y, w, h)
+      return myWall
     end
     
     local wallHeight = window.height / 3
@@ -38,9 +40,9 @@ Game = Class{
       rightBot = makeWall(window.width - 16, window.height - wallHeight - 16, 16 + puckOut, wallHeight),
     }
     
-    for k,v in pairs(walls) do
-      world:add(v, v.x, v.y, v.w, v.h)
-    end
+    local midWidth = 32
+    midWall = makeWall(window.width / 2 - midWidth / 2, 0, midWidth, window.height)
+    
   end,
   
   update = function(self)

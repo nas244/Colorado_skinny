@@ -22,7 +22,9 @@ Puck = Class{
   end,
   
   filter = function(item, other)
-    if contains(walls, other) then
+    if other == midWall then
+      return "cross"
+    elseif contains(walls, other) then
       return "bounce"
     end
     return "touch"
@@ -100,10 +102,7 @@ Puck = Class{
         local toOther = Vector(other.x - self.x, other.y - self.y)
         local dist = toOther:len()
         
-        local toOther = Vector(other.x - self.x, other.y - self.y)
-        local dist = toOther:len()
-        
-        if dist <= self.w + 2 or true then
+        if true then
           local v1 = self.movement:len()
           local v2 = other.movement:len()
           local theta1 = self.movement:angleTo()
