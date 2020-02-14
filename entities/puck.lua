@@ -18,6 +18,7 @@ Puck = Class{
     self.collider = world:newCircleCollider(self.x + self.w / 2, self.y + self.h / 2, self.w / 2)
     self.collider:setCollisionClass("Puck")
     self.collider:setMass(10)
+    self.collider:setLinearDamping(0.25)
   end,
   
   update = function(self)
