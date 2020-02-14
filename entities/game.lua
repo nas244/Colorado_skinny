@@ -4,6 +4,7 @@ wf = require "libs.windfield"
 
 Puck = require "entities.puck"
 LeftMallet = require "entities.leftMallet"
+RightMallet = require "entities.rightMallet"
 
 -- Ensure that image only loads once
 puckImage = love.graphics.newImage("assets/red_puck.png")
@@ -22,8 +23,10 @@ Game = Class{
     -- Defined globally /shrug
     puck = Puck()
     leftMallet = LeftMallet()
+    rightMallet = RightMallet()
     mallets = {
-      lm = leftMallet
+      lm = leftMallet,
+      rm = rightMallet
     }
     
     -- Let's get some WALLS goin
@@ -56,6 +59,7 @@ Game = Class{
   
   update = function(self, dt)
     leftMallet:update()
+    rightMallet:update()
     puck:update()
     world:update(dt)
   end,
@@ -73,6 +77,7 @@ Game = Class{
     
     puck:draw()
     leftMallet:draw()
+    rightMallet:draw()
     
     love.graphics.setColor(1,0.2,0.2)
     drawShadow(love.graphics.print, "hi there" .. tostring(leftMallet.score), 16, 8)
