@@ -21,21 +21,20 @@ Puck = Class{
   end,
   
   update = function(self)
-    local outDist = self.w
+    local outDist = self.w * 2
     
-    if self.x < -outDist or self.x > window.width + outDist or self.y < -outDist or self.y > window.height + outDist then
-      -- Remove puck from physics
-      
-      
-      -- Set global reference to puck to be a new puck
-      
-      
-      -- Increase left mallet's score
-      leftMallet.score = leftMallet.score + 1
-      
-      -- Probably unnecessary since the garbage collector should take care of it,
-      --  but go ahead and unreference the old puck object directly anyway
-      --self = nil
+    self.x, self.y = self.collider:getPosition()
+    
+    if self.collider:enter("Score") then
+      if not self.score then
+        if self.x < window.width / 2 then
+          self.score = -1
+          leftMallet.score = leftMallet.score + 1
+        else
+          self.score = 1
+          rightMallet.score = rightMallet.score + 1
+        end
+      end
     end
   end,
   
