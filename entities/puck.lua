@@ -1,6 +1,5 @@
 Hump = require "libs.hump.class"
 Vector = require "libs.hump.vector"
-Bump = require "libs.bump.bump"
 
 Puck = Class{
   init = function(self)
@@ -10,7 +9,7 @@ Puck = Class{
     self.h = self.img:getWidth() - 10
     self.w = self.h
     
-    self.x = window.width / 2 - self.w / 2
+    self.x = window.width / 3 - self.w / 2
     self.y = window.height / 2 - self.h / 2
     
     self.speed = 100
