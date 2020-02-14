@@ -112,7 +112,7 @@ Game = Class{
     rightMallet:draw()
     
     love.graphics.setColor(1,0.2,0.2, 1)
-    love.graphics.print("hi there" .. tostring(leftMallet.score), 16, 8)
+    drawShadow(love.graphics.print, tostring(leftMallet.score), 32, 20)
     
     love.graphics.setLineWidth(5)
     love.graphics.setColor(0,0,0)
