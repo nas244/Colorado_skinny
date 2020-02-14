@@ -94,6 +94,9 @@ Game = Class{
     puck:update()
     rightMallet:update()
     world:update(dt)
+    
+    leftMallet.score = clamp(leftMallet.score, 0, 7)
+    rightMallet.score = clamp(rightMallet.score, 0, 7)
   end,
   
   draw = function(self)
@@ -113,6 +116,7 @@ Game = Class{
     
     love.graphics.setColor(1,0.2,0.2, 1)
     drawShadow(love.graphics.print, tostring(leftMallet.score), 32, 20)
+    drawShadow(love.graphics.print, tostring(rightMallet.score), window.width - 64, 20)
     
     love.graphics.setLineWidth(5)
     love.graphics.setColor(0,0,0)

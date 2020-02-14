@@ -13,7 +13,6 @@ Puck = Class{
     self.y = window.height / 2 - self.h / 2
     
     self.speed = 100
-    self.movement = Vector.randomDirection() * self.speed
     
     self.collider = world:newCircleCollider(self.x + self.w / 2, self.y + self.h / 2, self.w / 2)
     self.collider:setCollisionClass("Puck")
@@ -27,13 +26,17 @@ Puck = Class{
     
     if self.collider:enter("Score") then
       if not self.score then
-        if self.x < window.width / 2 then
-          self.score = -1
+        if self.x > window.width / 2 then
+          self.score = "left"
           leftMallet.score = leftMallet.score + 1
         else
-          self.score = 1
+          self.score = "right"
           rightMallet.score = rightMallet.score + 1
         end
+        
+        self.collider:destroy()
+        puck = Puck()
+        self = nil
       end
     end
   end,
