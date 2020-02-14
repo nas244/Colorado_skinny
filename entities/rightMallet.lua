@@ -1,19 +1,19 @@
 Hump = require "libs.hump.class"
 Vector = require "libs.hump.vector"
-Bump = require "libs.bump.bump"
 
 RightMallet = Class{
   init = function(self)
-    self.img = puckImage
-    self.name = "leftMallet"
+    self.img = mallets.blue
+    self.name = "rightMallet"
     
     self.h = self.img:getWidth() - 10
     self.w = self.h
     
-    self.x = window.width / 1.3  + self.w / 2
-    self.y = window.height / 1.3 + self.h / 2
+    self.x = 3 * window.width / 4 - self.w / 2
+    self.y = 3 * window.height / 4 - self.h / 2
     
     self.speed = 100
+    self.maxSpeed = 2000
     
     self.score = 0
     

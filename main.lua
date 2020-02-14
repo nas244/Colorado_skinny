@@ -1,6 +1,5 @@
 Class = require("libs.hump.class")
 Vector = require "libs.hump.vector"
-Bump = require("libs.bump.bump")
 
 require("libs.useful")
 

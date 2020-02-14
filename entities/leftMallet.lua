@@ -1,10 +1,9 @@
 Hump = require "libs.hump.class"
 Vector = require "libs.hump.vector"
-Bump = require "libs.bump.bump"
 
 LeftMallet = Class{
   init = function(self)
-    self.img = puckImage
+    self.img = mallets.red
     self.name = "leftMallet"
     
     self.h = self.img:getWidth() - 10
@@ -14,6 +13,7 @@ LeftMallet = Class{
     self.y = window.height / 4 - self.h / 2
     
     self.speed = 100
+    self.maxSpeed = 2000
     
     self.score = 0
     
@@ -31,6 +31,8 @@ LeftMallet = Class{
     local newMove = normMouse:trimmed(self.speed) * 500
     
     self.collider:applyLinearImpulse(newMove.x, newMove.y)
+    
+    self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
   end,
   
   draw = function(self)

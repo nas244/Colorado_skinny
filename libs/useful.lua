@@ -26,6 +26,16 @@ function choose(tab)
   return tab[ love.math.random(#tab) ]
 end
 
+-- Get a list of all keys in a table
+function keys(tab)
+  local key = {}
+  
+  for k,v in pairs(tab) do
+    table.insert(key, k)
+  end
+  return key
+end
+
 -- rounds numbers to neatest of value (0.1 to nearest tenth, 10 to nearest ten, etc)
 function round(num, dec)
   dec = dec or 1
