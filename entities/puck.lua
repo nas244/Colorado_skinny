@@ -13,7 +13,6 @@ Puck = Class{
     self.y = window.height / 2 - self.h / 2
     
     self.speed = 100
-    self.movement = Vector.randomDirection() * self.speed
     
     self.collider = world:newCircleCollider(self.x + self.w / 2, self.y + self.h / 2, self.w / 2)
     self.collider:setCollisionClass("Puck")
@@ -22,21 +21,24 @@ Puck = Class{
   end,
   
   update = function(self)
-    local outDist = self.w
+    local outDist = self.w * 2
     
-    if self.x < -outDist or self.x > window.width + outDist or self.y < -outDist or self.y > window.height + outDist then
-      -- Remove puck from physics
-      
-      
-      -- Set global reference to puck to be a new puck
-      
-      
-      -- Increase left mallet's score
-      leftMallet.score = leftMallet.score + 1
-      
-      -- Probably unnecessary since the garbage collector should take care of it,
-      --  but go ahead and unreference the old puck object directly anyway
-      --self = nil
+    self.x, self.y = self.collider:getPosition()
+    
+    if self.collider:enter("Score") then
+      if not self.score then
+        if self.x > window.width / 2 then
+          self.score = "left"
+          leftMallet.score = leftMallet.score + 1
+        else
+          self.score = "right"
+          rightMallet.score = rightMallet.score + 1
+        end
+        
+        self.collider:destroy()
+        puck = Puck()
+        self = nil
+      end
     end
   end,
   

@@ -24,7 +24,35 @@ RightMallet = Class{
   end,
   
   update = function(self)
-    self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
+    -- Take mouse movement, trim movements to 10 times max speed and scale down by ten
+    --local normMouse = Vector(mouse.x, mouse.y):trimmed(self.speed * 10) / 10
+    
+    -- Next, add mouse movement to puck movement and then clamp magnitude to max puck speed
+    --local newMove = normMouse:trimmed(self.speed) * 500
+    local puckmovex,puckmovey = puck.collider:getLinearVelocity()
+    local puckpositionx,puckpositiony = puck.collider:getPosition()
+    local xx, yy = self.collider:getPosition()
+
+    local difference = yy - (puckmovey/puckmovex)*xx+puckpositiony
+
+    print(difference)
+
+    if puckmovex == 0 and puckmovey == 0 then
+      self.collider:setPosition(xx,yy)
+
+    --elseif  then
+      --print("equal")
+      --self.collider:applyLinearImpulse(0,0)
+      
+    else
+      print("change location")
+      self.collider:setPosition(window.width / 1.3  + self.w / 2,(puckmovey/puckmovex)*xx+puckpositiony)
+    end
+
+    
+
+
+    --self.collider:applyLinearImpulse(newMove.x, newMove.y)
   end,
   
   draw = function(self)
