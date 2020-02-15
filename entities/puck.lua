@@ -45,8 +45,8 @@ Puck = Class{
         end
       end
     else
-      local speed = Vector(self.collider:getLinearVelocity()):len()
-      print(speed)
+      -- Get X velcoity, throw out Y
+      local speed = math.abs(self.collider:getLinearVelocity())
       
       if self.x < -outDist or self.x > window.width + outDist then
         self.collider:destroy()

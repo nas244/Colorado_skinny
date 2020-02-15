@@ -29,15 +29,11 @@ RightMallet = Class{
     
     -- Next, add mouse movement to puck movement and then clamp magnitude to max puck speed
     --local newMove = normMouse:trimmed(self.speed) * 500
-    local puckmovex,puckmovey = puck.collider:getLinearVelocity()
-    local puckpositionx,puckpositiony = puck.collider:getPosition()
+    local px, py = puck.collider:getPosition()
     local xx, yy = self.collider:getPosition()
+    local mx, my = puck.collider:getLinearVelocity()
 
-    local difference = yy - (puckmovey/puckmovex)*xx+puckpositiony
-
-    print(difference)
-
-    if puckmovex == 0 and puckmovey == 0 then
+    if mx <= 0 or my == 0 then
       self.collider:setPosition(xx,yy)
 
     --elseif  then
@@ -45,8 +41,10 @@ RightMallet = Class{
       --self.collider:applyLinearImpulse(0,0)
       
     else
-      print("change location")
-      self.collider:setPosition(window.width / 1.3  + self.w / 2,(puckmovey/puckmovex)*xx+puckpositiony)
+      local slope = (my / mx) / love.physics.getMeter()
+      local newY = clamp(py + slope * xx, 0, window.height)
+      --print("change location")
+      self.collider:setPosition(window.width / 1.3  + self.w / 2, newY )
     end
 
     
