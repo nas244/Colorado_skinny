@@ -96,6 +96,9 @@ function love.update(dt)
   -- Actions
   actions.pause = keyp.p
   
+  actions.increaseSensitivity = keyp["+"] or keyp["kp+"]
+  actions.decreaseSensitivity = keyp["-"] or keyp["kp-"]
+  
   -- Update our game function
   Game:update(dt)
   

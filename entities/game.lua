@@ -93,6 +93,14 @@ Game = Class{
   
   update = function(self, dt)
     
+    local sensitivityDiff = bti(actions.increaseSensitivity) - bti(actions.decreaseSensitivity)
+    
+    if sensitivityDiff ~= 0 then
+      leftMallet.sensitivity = clamp(leftMallet.sensitivity + sensitivityDiff, 1, 10)
+      print("SENSITIVITY CHANGED")
+    end
+    
+    
     if actions.pause then
       self.paused = not self.paused
       

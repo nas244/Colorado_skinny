@@ -21,23 +21,39 @@ Puck = Class{
   end,
   
   update = function(self)
+    -- Setup for out-of-bounds behavior
     local outDist = self.w * 2
+    local outPush = 50
     
     self.x, self.y = self.collider:getPosition()
     
+    -- If we've entered a scoring zone
     if self.collider:enter("Score") then
+      
+      -- If this puck hasn't scored yet
       if not self.score then
+        
+        -- Figure out where we are, then set our score side
+        --   1 being the right side, -1 being the left side
+        --   and increment the correct side's score
         if self.x > window.width / 2 then
-          self.score = "left"
+          self.score = 1
           leftMallet.score = leftMallet.score + 1
         else
-          self.score = "right"
+          self.score = -1
           rightMallet.score = rightMallet.score + 1
         end
-        
+      end
+    else
+      local speed = Vector(self.collider:getLinearVelocity()):len()
+      print(speed)
+      
+      if self.x < -outDist or self.x > window.width + outDist then
         self.collider:destroy()
         puck = Puck()
         self = nil
+      elseif self.score and (self.x < self.w / 2 or self.x > window.width - self.w / 2) and speed < 100 then
+        self.collider:applyLinearImpulse(self.score * outPush,0)
       end
     end
   end,

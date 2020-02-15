@@ -107,10 +107,13 @@ function drawShadow(...)
   local func = args[1]
   table.remove(args, 1)
   local r,g,b,a = love.graphics.getColor()
+  
   love.graphics.setColor(0,0,0)
+  args[2], args[3] = args[2] + 1, args[3] + 1
   func(unpack(args))
-  args[2], args[3] = args[2] - 1, args[3] - 1
+  
   love.graphics.setColor(r,g,b,a)
+  args[2], args[3] = args[2] - 1, args[3] - 1
   func(unpack(args))
 end
 
