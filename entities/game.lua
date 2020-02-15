@@ -29,6 +29,9 @@ Game = Class{
   },
   
   init = function(self)
+    self.paused = false
+    self.pauseText = love.graphics.newText(font, "")
+    
     world = wf.newWorld(0, 0, true)
     
     world:addCollisionClass("Wall")
@@ -89,11 +92,20 @@ Game = Class{
   end,
   
   update = function(self, dt)
-    leftMallet:update()
-    rightMallet:update()
-    puck:update()
-    rightMallet:update()
-    world:update(dt)
+    
+    if actions.pause then
+      self.paused = not self.paused
+      
+      self.pauseText:set( choose{"Need a break, huh?", "Paused.", "Hold on a minute...", "Wait wait wait!", "Air hockey ain't made for pausin'!"} )
+    end
+    
+    if not self.paused then
+      leftMallet:update()
+      rightMallet:update()
+      puck:update()
+      rightMallet:update()
+      world:update(dt)
+    end
     
     leftMallet.score = clamp(leftMallet.score, 0, 7)
     rightMallet.score = clamp(rightMallet.score, 0, 7)
@@ -121,6 +133,15 @@ Game = Class{
     love.graphics.setLineWidth(5)
     love.graphics.setColor(0,0,0)
     world:draw(128)
+    
+    if self.paused then
+      local ww = self.pauseText:getWidth() / 2
+      local hh = self.pauseText:getHeight() / 2
+      local xx, yy = window.width / 2 - ww, window.height / 4 - hh
+      
+      love.graphics.setColor(0.5,0.5,1)
+      drawShadow(love.graphics.draw, self.pauseText, xx, yy)
+    end
     
     love.graphics.setColor(1,1,1)
   end

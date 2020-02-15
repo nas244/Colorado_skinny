@@ -94,7 +94,7 @@ function love.update(dt)
   gameTime = gameTime + 1
   
   -- Actions
-  actions.test = keyp.f
+  actions.pause = keyp.p
   
   -- Update our game function
   Game:update(dt)
