@@ -1,7 +1,8 @@
-Class = require("libs.hump.class")
+Class = require "libs.hump.class"
 Vector = require "libs.hump.vector"
+GS = require "libs.hump.gamestate"
 
-require("libs.useful")
+require "libs.useful"
 
 -- Set up window table with information
 --  Width/height are BEFORE scaling
@@ -84,7 +85,7 @@ function love.load()
   
   -- Get our game controller
   Game = require("entities.game")
-  Game:init()
+  GS.switch(Game)
 end
 
 -- Line for mouse drawing
@@ -100,7 +101,7 @@ function love.update(dt)
   actions.decreaseSensitivity = keyp["-"] or keyp["kp-"]
   
   -- Update our game function
-  Game:update(dt)
+  GS.update(dt)
   
   -- Reset keypresses
   keyp = {}
@@ -121,7 +122,7 @@ function love.draw(dt)
   love.graphics.setCanvas(Canvas)
 	love.graphics.clear()
   
-  Game:draw()
+  GS.draw()
   
   local xx, yy = window.width / 2, window.height / 2
   love.graphics.line(xx, yy, xx + mouseDraw.x * 5 , yy + mouseDraw.y * 5 )

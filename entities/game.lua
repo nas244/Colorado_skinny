@@ -1,5 +1,6 @@
 Vector = require "libs.hump.vector"
 wf = require "libs.windfield"
+GS = require "libs.hump.gamestate"
 -- Overall game controller
 
 Puck = require "entities.puck"
@@ -20,7 +21,7 @@ boards =
     classic = love.graphics.newImage("assets/Classic_Board_Edged.png"),
   }
 
-Game = Class{
+Game = {
   opponents = {
     quartz = {
       board = boards.default,
@@ -28,7 +29,7 @@ Game = Class{
     }
   },
   
-  init = function(self)
+  enter = function(self)
     self.paused = false
     self.pauseText = love.graphics.newText(font, "")
     
@@ -58,7 +59,7 @@ Game = Class{
       return myWall
     end
     
-    puckOut = 64
+    local puckOut = 64
     
     walls = {
       top = makeWall(0,-puckOut,window.width,16 + puckOut),
@@ -91,15 +92,27 @@ Game = Class{
     self.opponent = choose(keys(self.opponents))
   end,
   
-  update = function(self, dt)
+  exit = function(self)
+    world:destroy()
     
+    walls = nil
+    score = nil
+    
+    puck = nil
+    leftMallet = nil
+    rightMallet = nil
+    
+    self.opponent = nil
+  end,
+  
+  update = function(self, dt)
+    -- DEBUG: replace with menu thing
     local sensitivityDiff = bti(actions.increaseSensitivity) - bti(actions.decreaseSensitivity)
     
     if sensitivityDiff ~= 0 then
       leftMallet.sensitivity = clamp(leftMallet.sensitivity + sensitivityDiff, 1, 10)
       print("SENSITIVITY CHANGED")
     end
-    
     
     if actions.pause then
       self.paused = not self.paused
