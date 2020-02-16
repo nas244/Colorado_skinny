@@ -31,19 +31,25 @@ RightMallet = Class{
     --local newMove = normMouse:trimmed(self.speed) * 500
     local px, py = puck.collider:getPosition()
     local xx, yy = self.collider:getPosition()
-    local mx, my = puck.collider:getLinearVelocity()
+    local pmx, pmy = puck.collider:getLinearVelocity()
+    local mmx, mmy = self.collider:getLinearVelocity()
 
-    if mx <= 0 or my == 0 then
+    local slope = (pmy / pmx) / love.physics.getMeter()
+    local newY = clamp(py + slope * xx, 0, window.height)
+
+    print(mmx,mmy)
+
+    if pmx <= 0 or pmy == 0 then
       self.collider:setPosition(xx,yy)
+      self.collider:applyLinearImpulse(5,5)
 
-    --elseif  then
-      --print("equal")
-      --self.collider:applyLinearImpulse(0,0)
+    elseif -2<=yy-newY and yy-newY<=2 then
+      print("apply momentum")
+      self.collider:applyLinearImpulse(-px*5,-py*5)
+      self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
       
     else
-      local slope = (my / mx) / love.physics.getMeter()
-      local newY = clamp(py + slope * xx, 0, window.height)
-      --print("change location")
+      print("change location")
       self.collider:setPosition(window.width / 1.3  + self.w / 2, newY )
     end
 
