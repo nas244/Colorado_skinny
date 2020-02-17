@@ -38,10 +38,9 @@ RightMallet = Class{
     local newY = clamp(py + slope * xx, 0, window.height)
     local goal = (window.height/2-yy)
 
-    print(mmx,mmy)
-
+    
     if pmx <= 0 or pmy == 0 then
-      self.collider:setPosition(xx,yy)
+      --self.collider:setPosition(xx,yy)
       self.collider:applyLinearImpulse(5,5)
 
     elseif -2<=yy-newY and yy-newY<=2 then
@@ -51,7 +50,8 @@ RightMallet = Class{
       
     else
       print("change location")
-      self.collider:setPosition(window.width / 1.3  + self.w / 2, newY )
+      --self.collider:setPosition(window.width / 1.3  + self.w / 2, newY )
+      self.collider:applyLinearImpulse(((3 * window.width / 4 - self.w / 2)-xx)*5,(newY-yy)*10)
     end
 
     
