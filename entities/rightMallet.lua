@@ -36,6 +36,7 @@ RightMallet = Class{
 
     local slope = (pmy / pmx) / love.physics.getMeter()
     local newY = clamp(py + slope * xx, 0, window.height)
+    local goal = (window.height/2-yy)
 
     print(mmx,mmy)
 
@@ -45,7 +46,7 @@ RightMallet = Class{
 
     elseif -2<=yy-newY and yy-newY<=2 then
       print("apply momentum")
-      self.collider:applyLinearImpulse(-px*5,-py*5)
+      self.collider:applyLinearImpulse(px*-5,goal*5)
       self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
       
     else
