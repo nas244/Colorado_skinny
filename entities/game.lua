@@ -1,7 +1,6 @@
 Vector = require "libs.hump.vector"
 wf = require "libs.windfield"
-GS = require "libs.hump.gamestate"
--- Overall game controller
+-- Air hockey game controller state
 
 Puck = require "entities.puck"
 LeftMallet = require "entities.leftMallet"
@@ -117,7 +116,7 @@ Game = {
     if actions.pause then
       self.paused = not self.paused
       
-      self.pauseText:set( choose{"Need a break, huh?", "Paused.", "Hold on a minute...", "Wait wait wait!", "Air hockey ain't made for pausin'!"} )
+      self.pauseText:set( choose{"Need a break, huh?", "Paused.", "Hold on a minute...", "Wait wait wait!", "Air hockey ain't made for pausin'!", "Don't be too long!", "Strategy break.", "Time out!"} )
     end
     
     if not self.paused then
@@ -158,10 +157,17 @@ Game = {
     if self.paused then
       local ww = self.pauseText:getWidth() / 2
       local hh = self.pauseText:getHeight() / 2
-      local xx, yy = window.width / 2 - ww, window.height / 4 - hh
+      local xx, yy = window.width / 2 - ww, window.height / 4
       
       love.graphics.setColor(0.5,0.5,1)
-      drawShadow(love.graphics.draw, self.pauseText, xx, yy)
+      
+      love.graphics.setFont(font)
+      drawShadow(love.graphics.draw, self.pauseText, xx, yy - hh)
+      
+      love.graphics.setFont(smallFont)
+      
+      local pauseMenu = "* Continue\n  Restart\n  Quit\n  This menu is fake :)"
+      drawShadow(love.graphics.print, pauseMenu, xx, yy * 1.5)
     end
     
     love.graphics.setColor(1,1,1)

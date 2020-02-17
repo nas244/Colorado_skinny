@@ -72,6 +72,7 @@ function love.load()
 	Canvas = love.graphics.newCanvas(window.width, window.height)
   
   font = love.graphics.newFont("assets/scoreboard.ttf", 60)
+  smallFont = love.graphics.newFont("assets/scoreboard.ttf", 48)
   love.graphics.setFont(font)
   
   -- Set up our action table
@@ -83,9 +84,10 @@ function love.load()
   -- Overall game timer for fun (and sin functions)
   gameTime = 0
   
-  -- Get our game controller
-  Game = require("entities.game")
-  GS.switch(Game)
+  -- Get our game states
+  Game = require "entities.game"
+  Menu = require "entities.menu"
+  GS.switch(Menu)
 end
 
 -- Line for mouse drawing
@@ -96,6 +98,7 @@ function love.update(dt)
   
   -- Actions
   actions.pause = keyp.p
+  actions.start = keyp["return"] or keyp.kpenter
   
   actions.increaseSensitivity = keyp["+"] or keyp["kp+"]
   actions.decreaseSensitivity = keyp["-"] or keyp["kp-"]
