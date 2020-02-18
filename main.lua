@@ -134,6 +134,8 @@ function love.draw(dt)
   
   GS.draw()
   
+  love.graphics.setColor(1,1,1,1)
+  
   local xx, yy = window.width / 2, window.height / 2
   love.graphics.line(xx, yy, xx + mouseDraw.x * 5 , yy + mouseDraw.y * 5 )
   
