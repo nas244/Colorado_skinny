@@ -16,7 +16,7 @@ table.insert(buttons, newButton("Quit", function() love.event.push("quit") end))
 
 Menu = {
   enter = function(self)
-    
+    love.mouse.setGrabbed(false)
   end,
   
   exit = function(self)

@@ -42,7 +42,10 @@ Game = {
     world:addCollisionClass("Wall")
     world:addCollisionClass("Score")
     world:addCollisionClass("Middle")
+    
     world:addCollisionClass("Puck", {ignores = {"Middle", "Score"}})
+    world:addCollisionClass("GhostPuck", {ignores = {"Middle", "Puck", "Score"}})
+    
     world:addCollisionClass("Mallet", {ignores = {"Middle"}})
     
     -- Defined globally /shrug
@@ -90,7 +93,7 @@ Game = {
       right = makeScore(window.width + scoreWidth)
     }
     
-    local midWidth = 32
+    local midWidth = 16
     midWall = makeWall(window.width / 2 - midWidth / 2, 0, midWidth, window.height, "Middle")
     
     self.opponent = choose(keys(self.opponents))
@@ -170,14 +173,17 @@ Game = {
     leftMallet:draw()
     rightMallet:draw()
     
+    love.graphics.setLineWidth(5)
+    love.graphics.setColor(0,0,0)
+    world:draw(0.5)
+    
     love.graphics.setFont(font)
     love.graphics.setColor(1,0.2,0.2, 1)
     drawShadow(love.graphics.print, tostring(leftMallet.score), 32, 20)
     drawShadow(love.graphics.print, tostring(rightMallet.score), window.width - 64, 20)
     
-    love.graphics.setLineWidth(5)
-    love.graphics.setColor(0,0,0)
-    world:draw(128)
+    local puckTimer = tostring(math.floor(math.abs(puck.sideTimer / 60)))
+    drawShadow(love.graphics.printf, puckTimer, 0, 32, window.width, "center")
     
     if self.paused then
       local ww = self.pauseText:getWidth() / 2
