@@ -202,8 +202,6 @@ Game = {
         drawShadow(love.graphics.print, opt, window.width / 2.75, yy * 1.5 + 48 * i)
       end
     end
-    
-    love.graphics.setColor(1,1,1)
   end
 }
 

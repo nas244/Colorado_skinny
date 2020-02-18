@@ -58,11 +58,10 @@ end
 
 -- Runs on load
 function love.load()
-  -- Disable linear filtering (i hate that crap)
+  -- Enable linear filtering (i hate that crap)
 	love.graphics.setDefaultFilter("linear","linear",16)
-  --  love.keyboard.setKeyRepeat(true)
   
-  -- Colorado Skinny Visits The Stars
+  -- Colorado Skinny Converts To Mormonism
   love.window.setTitle( "Colorado Skinny - Air Hockey Novice" )
   
   -- Set our window to the right size, adjusting for our current scale
@@ -85,6 +84,9 @@ function love.load()
   Game = require "entities.game"
   Menu = require "entities.menu"
   GS.switch(Menu)
+  
+  local imgData = love.image.newImageData("assets/red_mallet.png")
+  love.window.setIcon(imgData)
 end
 
 -- Line for mouse drawing
