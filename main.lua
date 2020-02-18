@@ -78,9 +78,6 @@ function love.load()
   -- Set up our action table
 	actions = {}
   
-  -- Get that mouse going!
-  love.mouse.setRelativeMode(true)
-  
   -- Overall game timer for fun (and sin functions)
   gameTime = 0
   
@@ -99,6 +96,16 @@ function love.update(dt)
   -- Actions
   actions.pause = keyp.p
   actions.start = keyp["return"] or keyp.kpenter
+  
+  -- Up/Down measurement
+  --  0 is none, 1 is down, -1 is up
+  actions.up = keyp.w or keyp.up
+  actions.down = keyp.s or keyp.down
+  actions.UD = bti(actions.down) - bti(actions.up)
+  
+  actions.left = keyp.a or keyp.left
+  actions.right = keyp.d or keyp.right
+  actions.LR = bti(actions.right) - bti(actions.left)
   
   actions.increaseSensitivity = keyp["+"] or keyp["kp+"]
   actions.decreaseSensitivity = keyp["-"] or keyp["kp-"]

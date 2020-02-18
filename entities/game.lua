@@ -29,6 +29,11 @@ Game = {
   },
   
   enter = function(self)
+    self.optionSelect = 1
+    
+    -- Get that mouse going!
+    love.mouse.setRelativeMode(true)
+    
     self.paused = false
     self.pauseText = love.graphics.newText(font, "")
     
@@ -92,6 +97,8 @@ Game = {
   end,
   
   exit = function(self)
+    love.mouse.setRelativeMode(false)
+    
     world:destroy()
     
     walls = nil
@@ -113,19 +120,36 @@ Game = {
       print("SENSITIVITY CHANGED")
     end
     
-    if actions.pause then
-      self.paused = not self.paused
-      
-      self.pauseText:set( choose{"Need a break, huh?", "Paused.", "Hold on a minute...", "Wait wait wait!", "Air hockey ain't made for pausin'!", "Don't be too long!", "Strategy break.", "Time out!"} )
-    end
-    
     if not self.paused then
       leftMallet:update()
       rightMallet:update()
       puck:update()
       rightMallet:update()
       world:update(dt)
+    else
+      self.optionSelect = keepBetween(self.optionSelect + actions.UD, 1, 3)
+      
+      if actions.start then
+        if self.optionSelect == 1 then
+          actions.pause = true
+        elseif self.optionSelect == 2 then
+          self:exit()
+          self:enter()
+        elseif self.optionSelect == 3 then
+          GS.switch(Menu)
+        end
+      end
     end
+    
+    if actions.pause then
+      self.paused = not self.paused
+      self.optionSelect = 1
+      
+      love.mouse.setRelativeMode(not self.paused)
+      
+      self.pauseText:set( choose{"Need a break, huh?", "Paused.", "Hold on a minute...", "Wait wait wait!", "Air hockey ain't made for pausin'!", "Don't be too long!", "Strategy break.", "Time out!"} )
+    end
+    
     
     leftMallet.score = clamp(leftMallet.score, 0, 7)
     rightMallet.score = clamp(rightMallet.score, 0, 7)
@@ -146,6 +170,7 @@ Game = {
     leftMallet:draw()
     rightMallet:draw()
     
+    love.graphics.setFont(font)
     love.graphics.setColor(1,0.2,0.2, 1)
     drawShadow(love.graphics.print, tostring(leftMallet.score), 32, 20)
     drawShadow(love.graphics.print, tostring(rightMallet.score), window.width - 64, 20)
@@ -166,8 +191,16 @@ Game = {
       
       love.graphics.setFont(smallFont)
       
-      local pauseMenu = "* Continue\n  Restart\n  Quit\n  This menu is fake :)"
-      drawShadow(love.graphics.print, pauseMenu, xx, yy * 1.5)
+      local pauseOptions = {"Continue", "Restart", "Quit"}
+      for i = 0,2 do
+        local opt = pauseOptions[i + 1]
+        if self.optionSelect == i + 1 then
+          opt = "* " .. opt
+        else
+          opt = "  " .. opt
+        end
+        drawShadow(love.graphics.print, opt, window.width / 2.75, yy * 1.5 + 48 * i)
+      end
     end
     
     love.graphics.setColor(1,1,1)
