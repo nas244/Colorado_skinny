@@ -7,17 +7,17 @@ LeftMallet = require "entities.leftMallet"
 RightMallet = require "entities.rightMallet"
 
 -- Ensure that image only loads once
-puckImage = love.graphics.newImage("assets/red_puck.png")
+puckImage = love.graphics.newImage("assets/Game/red_puck.png")
 
 mallets = {
-  red = love.graphics.newImage("assets/red_mallet.png"),
-  blue = love.graphics.newImage("assets/blue_mallet.png"),
+  red = love.graphics.newImage("assets/Game/red_mallet.png"),
+  blue = love.graphics.newImage("assets/Game/blue_mallet.png"),
 }
 
 boards = 
   {
-    default = love.graphics.newImage("assets/Board_Min_Marked.png"),
-    classic = love.graphics.newImage("assets/Classic_Board_Edged.png"),
+    default = love.graphics.newImage("assets/Boards/Board_Min_Marked.png"),
+    classic = love.graphics.newImage("assets/Boards/Classic_Board_Edged.png"),
   }
 
 Game = {

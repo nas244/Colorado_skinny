@@ -2,7 +2,7 @@ GS = require "libs.hump.gamestate"
 
 -- Menu state
 
-menuBack = love.graphics.newImage("assets/Classic_Board_Rounded.png")
+menuBack = love.graphics.newImage("assets/Boards/Classic_Board_Rounded.png")
 
 local function newButton(text,fn)
   return {text=text,fn=fn, now = false, last = false}
@@ -30,6 +30,12 @@ Menu = {
   end,
   
   draw = function(self)
+    local backScale = window.width / menuBack:getWidth()
+    
+    love.graphics.scale(backScale)
+    love.graphics.draw(menuBack,0,0)
+    love.graphics.origin()
+    
     local ww = window.width
     local wh = window.height
     local margin = 16

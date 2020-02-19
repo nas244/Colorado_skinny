@@ -85,7 +85,7 @@ function love.load()
   Menu = require "entities.menu"
   GS.switch(Menu)
   
-  local imgData = love.image.newImageData("assets/red_mallet.png")
+  local imgData = love.image.newImageData("assets/Game/red_mallet.png")
   love.window.setIcon(imgData)
 end
 
