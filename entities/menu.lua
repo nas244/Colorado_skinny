@@ -11,7 +11,7 @@ BUTTON_HEIGHT = 64
 local buttons = {}
 table.insert(buttons, newButton("Start Game", function() GS.switch(Game)end))
 table.insert(buttons, newButton("Settings", function()end))
-table.insert(buttons, newButton("Restart", function() end))
+table.insert(buttons, newButton("Restart", function()end))
 table.insert(buttons, newButton("Quit", function() love.event.push("quit") end))
 
 Menu = {
