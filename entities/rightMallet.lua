@@ -38,22 +38,29 @@ RightMallet = Class{
     local newY = clamp(py + slope * xx, 0, window.height)
     local goal = (window.height/2-yy)
 
+    if px >= window.width/2 then
     
-    if pmx <= 0 or pmy == 0 then
-      --self.collider:setPosition(xx,yy)
-      self.collider:applyLinearImpulse(5,5)
+      --If it is close to the puck hit it back to the goal. Done
+      --Should move to block the goal when waiting on a return
+      --Fix puck stuck in a corner
 
-    elseif -2<=yy-newY and yy-newY<=2 then
-      print("apply momentum")
-      self.collider:applyLinearImpulse(px*-5,goal*5)
-      self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
+
+      if 10>=math.abs(pmx-mmx) then
+        --print("apply momentum")
+        self.collider:applyLinearImpulse(px*-5,goal*5)
+        self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
       
-    else
-      print("change location")
-      --self.collider:setPosition(window.width / 1.3  + self.w / 2, newY )
-      self.collider:applyLinearImpulse(((3 * window.width / 4 - self.w / 2)-xx)*5,(newY-yy)*10)
-    end
+      elseif pmx <= 0.5 and pmy <= 0.5 then
+        self.collider:applyLinearImpulse((px-xx)*5,(py-yy)*5)
 
+      else
+        --print("change location")
+        --self.collider:setPosition(window.width / 1.3  + self.w / 2, newY )
+        self.collider:applyLinearImpulse(((3 * window.width / 4 - self.w / 2)-xx)*5,(newY-yy)*10)
+      end
+    else
+      self.collider:applyLinearImpulse(((window.width-100)-xx)*5,((window.height/2)-yy))
+    end
     
 
 
