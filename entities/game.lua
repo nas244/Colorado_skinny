@@ -28,6 +28,8 @@ Game = {
     }
   },
   
+  pauseText = love.graphics.newText(font, ""),
+  
   enter = function(self)
     self.optionSelect = 1
     
@@ -35,7 +37,6 @@ Game = {
     love.mouse.setRelativeMode(true)
     
     self.paused = false
-    self.pauseText = love.graphics.newText(font, "")
     
     world = wf.newWorld(0, 0, true)
     
@@ -117,10 +118,16 @@ Game = {
   update = function(self, dt)
     -- DEBUG: replace with menu thing
     local sensitivityDiff = bti(actions.increaseSensitivity) - bti(actions.decreaseSensitivity)
+    local volumeDiff = (bti(actions.increaseVolume) - bti(actions.decreaseVolume))
     
     if sensitivityDiff ~= 0 then
-      leftMallet.sensitivity = clamp(leftMallet.sensitivity + sensitivityDiff, 1, 10)
       print("SENSITIVITY CHANGED")
+      settings.sensitivity = clamp(settings.sensitivity + sensitivityDiff, 1, 10)
+    
+    elseif volumeDiff ~= 0 then
+      print("VOLUME CHANGED")
+      settings.volume = clamp(settings.volume + volumeDiff, 0, 10)
+      love.audio.setVolume(settings.volume / 10)
     end
     
     if not self.paused then

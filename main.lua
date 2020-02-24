@@ -12,6 +12,12 @@ window = {
   scale = 1
 }
 
+-- Settings
+settings = {
+  sensitivity = 5,
+  volume = 10,
+}
+
 -- Configure to use console output
 function love.conf(t)
 	t.console = true
@@ -20,7 +26,7 @@ end
 -- Key is pressed
 function love.keypressed(key)
   -- Escape closes game instantly
-  if key == "escape" then
+  if key == "escape" and love.keyboard.isDown("lctrl","rctrl") then
     love.event.push("quit")
   
   -- Ctrl+R reloads game
@@ -31,6 +37,20 @@ function love.keypressed(key)
   -- Set keypress and keyhold for this key to true
   keyp[key] = true
   keyh[key] = true
+end
+
+-- Get mouse presses too
+function love.mousepressed(x,y,button,isTouch)
+  local mouse = "mouse" .. button
+  
+  keyp[mouse] = true
+  keyh[mouse] = true
+end
+
+function love.mousereleased(x,y,button,isTouch)
+  local mouse = "mouse" .. button
+  
+  keyh[mouse] = false
 end
 
 -- If key is released, disable its hold state
@@ -96,8 +116,8 @@ function love.update(dt)
   gameTime = gameTime + 1
   
   -- Actions
-  actions.pause = keyp.p
-  actions.start = keyp["return"] or keyp.kpenter
+  actions.pause = keyp.p or keyp.escape
+  actions.start = keyp["return"] or keyp.kpenter or keyp.space
   
   -- Up/Down measurement
   --  0 is none, 1 is down, -1 is up
@@ -109,8 +129,16 @@ function love.update(dt)
   actions.right = keyp.d or keyp.right
   actions.LR = bti(actions.right) - bti(actions.left)
   
-  actions.increaseSensitivity = keyp["+"] or keyp["kp+"]
-  actions.decreaseSensitivity = keyp["-"] or keyp["kp-"]
+  actions.plus = keyp["+"] or keyp["kp+"]
+  actions.minus = keyp["-"] or keyp["kp-"]
+  
+  actions.shift = keyh.lshift or keyh.rshift
+  
+  actions.increaseSensitivity = actions.plus and not actions.shift
+  actions.decreaseSensitivity = actions.minus and not actions.shift
+  
+  actions.increaseVolume = actions.plus and actions.shift
+  actions.decreaseVolume = actions.minus and actions.shift
   
   -- Update our game function
   GS.update(dt)
