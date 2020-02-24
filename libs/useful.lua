@@ -126,3 +126,11 @@ function contains(tab, val)
   end
   return false
 end
+
+-- Draw an image (optionally centered), with certain scaling
+function drawImg(img, x, y, scale, center)
+  local center = center or false
+  local x = (x or 0) - bti(center) * (img:getWidth() * scale / 2)
+  local y = (y or 0) - bti(center) * (img:getHeight() * scale / 2)
+  love.graphics.draw(img, x, y, 0, scale or 1, scale or 1)
+end

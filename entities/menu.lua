@@ -3,16 +3,18 @@ GS = require "libs.hump.gamestate"
 -- Menu state
 
 menuBack = love.graphics.newImage("assets/Boards/Classic_Board_Rounded.png")
+menuImg = love.graphics.newImage("assets/Game/menuLogo.png")
 
 local function newButton(text,fn)
   return {text=text,fn=fn, now = false, last = false}
 end
 BUTTON_HEIGHT = 64
-local buttons = {}
-table.insert(buttons, newButton("Start Game", function() GS.switch(Game)end))
-table.insert(buttons, newButton("Settings", function()end))
-table.insert(buttons, newButton("Restart", function()end))
-table.insert(buttons, newButton("Quit", function() love.event.push("quit") end))
+local buttons = {
+  newButton("Start Game", function() GS.switch(Game) end),
+  newButton("Settings", function() end),
+  newButton("Restart", function() end),
+  newButton("Quit", function() love.event.push("quit") end),
+}
 
 Menu = {
   enter = function(self)
@@ -35,6 +37,8 @@ Menu = {
     love.graphics.scale(backScale)
     love.graphics.draw(menuBack,0,0)
     love.graphics.origin()
+    
+    drawImg(menuImg, 0, 0, 0.5)
     
     local ww = window.width
     local wh = window.height
