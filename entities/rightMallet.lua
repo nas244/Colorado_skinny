@@ -48,22 +48,23 @@ RightMallet = Class{
       --Fix puck stuck in a corner
 
       if px>xx then
-        if py>=window.height/2 then
           if 5>=math.abs(pmx-mmx) then
-            self.collider:applyLinearImpulse((window.width-xx)*speed,(window.height-yy)*speed)
+            if py>=window.height/2 then
+              print("hitting to lower corner")
+              self.collider:applyLinearImpulse((window.width-xx)*speed,(window.height-yy)*speed)
+            else
+              print("hitting to upper corner")
+              self.collider:applyLinearImpulse((window.width-xx)*speed,(0-yy)*speed)
+            end
             --self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
-          else
-            self.collider:applyLinearImpulse((px-xx)*5,(newY-yy)*10)
-          end
-        else
-          if 5>=math.abs(pmx-mmx) then
-            self.collider:applyLinearImpulse((window.width-xx)*speed,(0-yy)*speed)
-            --self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack())
-          else
+          elseif pmx >= 0.5 and pmy >= 0.5 then
+            print("approaching corner")
             self.collider:applyLinearImpulse((px-xx)*speed,(newY-yy)*speed)
+          else
+            self.collider:applyLinearImpulse((px-xx)*speed,(py-yy)*speed)
           end
-        end
-
+       
+        
       elseif 10>=math.abs(pmx-mmx) then
         --print("apply momentum")
         self.collider:applyLinearImpulse(px*-speed,goal*speed)
