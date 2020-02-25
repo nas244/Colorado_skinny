@@ -67,6 +67,9 @@ Menu = {
     
     self.selected = 0
     
+    self.logoX = 0
+    self.logoXChange = 1 / 60
+    
     self.useMouse = true
   end,
   
@@ -75,6 +78,8 @@ Menu = {
   end,
   
   update = function(self, dt)
+    self.logoX = clamp(self.logoX + self.logoXChange, 0, 1)
+    
     local mx,my = love.mouse.getPosition()
     local mouseB = keyp.mouse1
     
@@ -123,7 +128,7 @@ Menu = {
     love.graphics.draw(menuBack,0,0)
     love.graphics.origin()
     
-    drawImg(menuImg, 0, 0, 0.5)
+    drawImg(menuImg, window.width * (-1 + self.logoX) ^ 3, 0, 0.5)
     
     for i, button in ipairs(buttons) do
       
@@ -144,6 +149,9 @@ Menu = {
       love.graphics.print(button.text,font, button.x + button.w / 2 - (textW * 0.5), button.y + (textH * 0.1))    
     end
   
+    love.graphics.setColor(0,0,0,1 - self.logoX)
+    
+    love.graphics.rectangle("fill", 0, 0, window.width, window.height)
   end
 }
 
