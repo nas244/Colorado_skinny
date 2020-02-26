@@ -73,7 +73,7 @@ Menu = {
     self.useMouse = true
   end,
   
-  exit = function(self)
+  leave = function(self)
     
   end,
   

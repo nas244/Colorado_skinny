@@ -23,22 +23,41 @@ boards =
 
 Game = {
   opponents = {
-    quartz = {
+    [1] = {
       board = boards.default,
       mallet = mallets.blue
-    }
+    },
+    [2] = {
+      board = boards.classic,
+      mallet = mallets.blue
+    },
   },
   
   pauseText = love.graphics.newText(font, ""),
   
-  enter = function(self)
+  enter = function(self, current, opponent)
+    opponent = opponent or 1
+    if opponent > #self.opponents then
+      GS.switch(Menu)
+      return
+    end
+    
+    self.opponent = opponent
+    
     self.optionSelect = 1
     
     -- Get that mouse going!
     love.mouse.setRelativeMode(true)
     
+    self.fade = 0
+    self.fadeAmount = 2 / 60
+    
     self.paused = false
     self.pauseFade = 0
+    
+    self.endWin = false
+    self.endText = nil
+    self.endTimer = 5 * 60
     
     world = wf.newWorld(0, 0, true)
     
@@ -98,14 +117,15 @@ Game = {
     
     local midWidth = 16
     midWall = makeWall(window.width / 2 - midWidth / 2, 0, midWidth, window.height, "Middle")
-    
-    self.opponent = choose(keys(self.opponents))
   end,
   
-  exit = function(self)
+  leave = function(self)
     love.mouse.setRelativeMode(false)
     
-    world:destroy()
+    if world then
+      world:destroy()
+      world = nil
+    end
     
     walls = nil
     score = nil
@@ -132,14 +152,31 @@ Game = {
       love.audio.setVolume(settings.volume / 10)
     end
     
+    self.fade = clamp(self.fade + self.fadeAmount, 0, 1)
+    
     self.pauseFade = lerp(self.pauseFade, bti(self.paused), 0.5)
     
     if not self.paused then
       leftMallet:update()
       rightMallet:update()
-      puck:update()
+      
+      if puck then
+        puck:update()
+      end
+      
       rightMallet:update()
       world:update(dt)
+      
+      local scoreMax = 7
+      
+      if leftMallet.score >= scoreMax then
+        self.endText = "You win!"
+        self.endWin = true
+        
+      elseif rightMallet.score >= scoreMax then
+        self.endText = "You lose..."
+        
+      end
     else
       self.optionSelect = keepBetween(self.optionSelect + actions.UD, 1, 3)
       
@@ -147,7 +184,7 @@ Game = {
         if self.optionSelect == 1 then
           actions.pause = true
         elseif self.optionSelect == 2 then
-          self:exit()
+          self:leave()
           self:enter()
         elseif self.optionSelect == 3 then
           GS.switch(Menu)
@@ -155,7 +192,18 @@ Game = {
       end
     end
     
-    if actions.pause then
+    if self.endText then
+      self.endTimer = self.endTimer - 1
+      
+      if self.endTimer <= 0 then
+        if self.endWin then
+          GS.switch(Game, self.opponent + 1)
+        else
+          GS.switch(Menu)
+        end
+      end
+    
+    elseif actions.pause then
       self.paused = not self.paused
       self.optionSelect = 1
       
@@ -163,10 +211,6 @@ Game = {
       
       self.pauseText:set( choose{"Need a break, huh?", "Paused.", "Hold on a minute...", "Wait wait wait!", "Air hockey ain't made for pausin'!", "Don't be too long!", "Strategy break.", "Time out!", "Not to scale."} )
     end
-    
-    
-    leftMallet.score = clamp(leftMallet.score, 0, 7)
-    rightMallet.score = clamp(rightMallet.score, 0, 7)
   end,
   
   draw = function(self)
@@ -180,7 +224,10 @@ Game = {
     
     love.graphics.setColor(1,1,1)
     
-    puck:draw()
+    if puck then
+      puck:draw()
+    end
+    
     leftMallet:draw()
     rightMallet:draw()
     
@@ -193,20 +240,30 @@ Game = {
     drawShadow(love.graphics.print, tostring(leftMallet.score), 32, 20)
     drawShadow(love.graphics.print, tostring(rightMallet.score), window.width - 64, 20)
     
-    local puckTimer = tostring(math.floor(math.abs(puck.sideTimer / 60)))
-    drawShadow(love.graphics.printf, puckTimer, 0, 32, window.width, "center")
+    if puck and not self.endText then
+      local puckTimer = tostring(math.floor(math.abs(puck.sideTimer / 60)))
+      drawShadow(love.graphics.printf, puckTimer, 0, 32, window.width, "center")
+    end
     
     love.graphics.setColor(0.5,0.5,1,self.pauseFade / 2)
     love.graphics.rectangle("fill", 0, 0, window.width, window.height)
     
-    if self.paused then
+    love.graphics.setFont(font)
+    
+    if self.endText then
+      local yy = window.height / 4
+      
+      love.graphics.setColor(0.5,0.5,1)
+      
+      drawShadow(love.graphics.printf, self.endText, 0, yy, window.width, "center")
+    
+    elseif self.paused then
       local ww = self.pauseText:getWidth() / 2
       local hh = self.pauseText:getHeight() / 2
       local xx, yy = window.width / 2 - ww, window.height / 4
       
       love.graphics.setColor(0.5,0.5,1)
       
-      love.graphics.setFont(font)
       drawShadow(love.graphics.draw, self.pauseText, xx, yy - hh)
       
       love.graphics.setFont(smallFont)
@@ -222,7 +279,22 @@ Game = {
         drawShadow(love.graphics.print, opt, window.width / 2.75, yy * 1.5 + 48 * i)
       end
     end
-  end
+    
+    local fades = math.max(1 - self.fade, 1 - self.endTimer / 60)
+    
+    love.graphics.setColor(0,0,0,fades)
+    love.graphics.rectangle("fill", 0, 0, window.width, window.height)
+  end,
+  
+  reset = function(self, side)
+    puck.collider:destroy()
+    
+    puck = nil
+    
+    if not self.endText then
+      puck = Puck(side)
+    end
+  end,
 }
 
 return Game

@@ -16,6 +16,7 @@ window = {
 settings = {
   sensitivity = 5,
   volume = 10,
+  opponent = 1,
 }
 
 -- Configure to use console output

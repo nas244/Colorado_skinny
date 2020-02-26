@@ -65,7 +65,7 @@ Puck = Class{
       
       if self.x < -outDist or self.x > window.width + outDist then
         -- Reset puck to side just scored on
-        self:reset(self.side)
+        Game:reset(self.side)
       elseif (self.x < self.w / 2 or self.x > window.width - self.w / 2) and speed < 100 then
         local force = -outPush + (2 * outPush * self.side)
         self.collider:applyLinearImpulse(force,0)
@@ -74,7 +74,7 @@ Puck = Class{
         
         if self.opacity <= 0 then
           -- Reset puck to other side
-          self:reset(1 - self.side)
+          Game:reset(1 - self.side)
         end
       end
     end
@@ -102,12 +102,6 @@ Puck = Class{
         rightMallet.score = rightMallet.score + 1
       end
     end
-  end,
-  
-  reset = function(self, side)
-    self.collider:destroy()
-    puck = Puck(side)
-    self = nil
   end,
 }
 
