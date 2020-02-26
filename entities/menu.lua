@@ -8,7 +8,7 @@ menuImg = love.graphics.newImage("assets/Game/menuLogo.png")
 local function newButton(text, fn)
   local BUTTON_Y = window.height / 2.2
   local BUTTON_HEIGHT = 64
-  local BUTTON_WIDTH = window.width / 2.5
+  local BUTTON_WIDTH = window.width / 1.8
   local BUTTON_GAP = 8
 
   local newButton = {

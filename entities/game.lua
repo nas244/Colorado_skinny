@@ -6,13 +6,14 @@ Puck = require "entities.puck"
 LeftMallet = require "entities.leftMallet"
 RightMallet = require "entities.rightMallet"
 
--- Ensure that image only loads once
+-- Ensure that images only loads once
 puckImage = love.graphics.newImage("assets/Game/red_puck.png")
 
-mallets = {
-  red = love.graphics.newImage("assets/Game/red_mallet.png"),
-  blue = love.graphics.newImage("assets/Game/blue_mallet.png"),
-}
+mallets = 
+  {
+    red = love.graphics.newImage("assets/Game/red_mallet.png"),
+    blue = love.graphics.newImage("assets/Game/blue_mallet.png"),
+  }
 
 boards = 
   {
@@ -37,6 +38,7 @@ Game = {
     love.mouse.setRelativeMode(true)
     
     self.paused = false
+    self.pauseFade = 0
     
     world = wf.newWorld(0, 0, true)
     
@@ -47,7 +49,7 @@ Game = {
     world:addCollisionClass("Puck", {ignores = {"Middle", "Score"}})
     world:addCollisionClass("GhostPuck", {ignores = {"Middle", "Puck", "Score"}})
     
-    world:addCollisionClass("Mallet", {ignores = {"Middle"}})
+    world:addCollisionClass("Mallet", {ignores = {}})
     
     -- Defined globally /shrug
     puck = Puck()
@@ -130,6 +132,8 @@ Game = {
       love.audio.setVolume(settings.volume / 10)
     end
     
+    self.pauseFade = lerp(self.pauseFade, bti(self.paused), 0.5)
+    
     if not self.paused then
       leftMallet:update()
       rightMallet:update()
@@ -157,7 +161,7 @@ Game = {
       
       love.mouse.setRelativeMode(not self.paused)
       
-      self.pauseText:set( choose{"Need a break, huh?", "Paused.", "Hold on a minute...", "Wait wait wait!", "Air hockey ain't made for pausin'!", "Don't be too long!", "Strategy break.", "Time out!"} )
+      self.pauseText:set( choose{"Need a break, huh?", "Paused.", "Hold on a minute...", "Wait wait wait!", "Air hockey ain't made for pausin'!", "Don't be too long!", "Strategy break.", "Time out!", "Not to scale."} )
     end
     
     
@@ -191,6 +195,9 @@ Game = {
     
     local puckTimer = tostring(math.floor(math.abs(puck.sideTimer / 60)))
     drawShadow(love.graphics.printf, puckTimer, 0, 32, window.width, "center")
+    
+    love.graphics.setColor(0.5,0.5,1,self.pauseFade / 2)
+    love.graphics.rectangle("fill", 0, 0, window.width, window.height)
     
     if self.paused then
       local ww = self.pauseText:getWidth() / 2
