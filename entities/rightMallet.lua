@@ -39,8 +39,9 @@ RightMallet = Class{
       local newY = clamp(py + slope * xx, 0, window.height)
       local goal = (window.height/2-yy)
 
-      local speed = 5
-      local respdis = 2
+    local speed = 5
+    local respdis = 2
+    local shootingdis = 10
 
       if px >= window.width/respdis then
       
@@ -48,31 +49,31 @@ RightMallet = Class{
         --Should move to block the goal when waiting on a return. Done
         --Fix puck stuck in a corner
 
-        if px>xx then
-            if 5>=math.abs(pmx-mmx) then
-              if py>=window.height/2 then
-                print("hitting to lower corner")
-                self.collider:applyLinearImpulse((window.width-xx)*speed,(window.height-yy)*speed)
-              else
-                print("hitting to upper corner")
-                self.collider:applyLinearImpulse((window.width-xx)*speed,(0-yy)*speed)
-              end
-              --self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
-            elseif pmx >= 0.5 and pmy >= 0.5 then
-              print("approaching corner")
-              self.collider:applyLinearImpulse((px-xx)*speed,(newY-yy)*speed)
+      if px>xx then
+          if shootingdis>=math.abs(pmx-mmx) then
+            if py>=window.height/2 then
+              --print("hitting to lower corner")
+              self.collider:applyLinearImpulse((window.width-xx)*speed,(window.height-yy)*speed)
             else
-              self.collider:applyLinearImpulse((px-xx)*speed,(py-yy)*speed)
+              --print("hitting to upper corner")
+              self.collider:applyLinearImpulse((window.width-xx)*speed,(0-yy)*speed)
             end
-         
-          
-        elseif 10>=math.abs(pmx-mmx) then
-          --print("apply momentum")
-          self.collider:applyLinearImpulse(px*-speed,goal*speed)
-          --self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
+            
+          elseif pmx >= 0.5 and pmy >= 0.5 then
+            --print("approaching corner")
+            self.collider:applyLinearImpulse((px-xx)*speed,(newY-yy)*speed)
+          else
+            self.collider:applyLinearImpulse((px-xx)*speed,(py-yy)*speed)
+          end
+       
         
-        elseif pmx <= 0.5 and pmy <= 0.5 then
-          self.collider:applyLinearImpulse((px-xx)*speed,(py-yy)*speed)
+      elseif shootingdis>=math.abs(pmx-mmx) then
+        --print("apply momentum")
+        self.collider:applyLinearImpulse(px*-speed,goal*speed)
+        --self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
+      
+      elseif pmx <= 0.5 and pmy <= 0.5 then
+        self.collider:applyLinearImpulse((px-xx)*speed,(py-yy)*speed)
 
         elseif pmx <= 0.2 and pmy >= 0.5 then
           self.collider:applyLinearImpulse((px-xx)*speed,(py-yy)*speed)
