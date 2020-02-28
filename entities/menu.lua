@@ -2,7 +2,7 @@ GS = require "libs.hump.gamestate"
 
 -- Menu state
 
-menuBack = love.graphics.newImage("assets/Boards/Classic_Board_Rounded.png")
+menuBack = love.graphics.newImage("assets/Main_Menu.png")
 menuImg = love.graphics.newImage("assets/Game/menuLogo.png")
 
 local function newButton(text, fn)

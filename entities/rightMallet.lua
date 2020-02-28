@@ -28,7 +28,6 @@ RightMallet = Class{
     self.collider:setCollisionClass("Mallet")
     self.collider:setMass(10)
     self.collider:setLinearDamping(10)
-    
   end,
   
   update = function(self)

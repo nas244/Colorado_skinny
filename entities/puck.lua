@@ -1,6 +1,9 @@
 Hump = require "libs.hump.class"
 Vector = require "libs.hump.vector"
 
+wallSound = love.audio.newSource("assets/Sounds/wall.mp3", "static")
+malletSound = love.audio.newSource("assets/Sounds/mallet.mp3", "static")
+
 Puck = Class{
   init = function(self, side)
     self.img = puckImage
@@ -11,6 +14,8 @@ Puck = Class{
     
     self.side = side or 0
     self.sideTimer = 0
+    
+    self.lastCollide = nil
     
     self.h = self.img:getWidth() - 10
     self.w = self.h
@@ -24,10 +29,41 @@ Puck = Class{
     self.collider:setCollisionClass("Puck")
     self.collider:setMass(10)
     self.collider:setLinearDamping(0.25)
+    
+    self.collider:setPostSolve(
+      function(collider_1, collider_2, contact, ni1, ti1, ni2, ti2)
+        if collider_1.collision_class == "Puck" and collider_2.collision_class == "Wall" then
+          if collider_2 ~= self.lastCollide then
+            self.lastCollide = collider_2
+            
+            local px, py = collider_1:getLinearVelocity()
+            
+            local speed = Vector(px, py):len() / 200
+            speed = clamp( speed, 0, 1)
+            
+            wallSound:setVolume(speed)
+            wallSound:play()
+          end
+        
+        elseif collider_1.collision_class == "Puck" and collider_2.collision_class == "Mallet" then
+          
+          self.lastCollide = nil
+          
+          local px, py = collider_1:getLinearVelocity()
+          local mx, my = collider_2:getLinearVelocity()
+          
+          local speed = Vector(mx, my):len() / 200
+          local speed2 = Vector(px, py):len() / 200
+          speed = clamp( math.max(speed, speed2), 0, 1)
+          
+          malletSound:setVolume(speed)
+          malletSound:play()
+        end
+      end
+    )
   end,
   
   update = function(self)
-    
     local xx = self.collider:getPosition()
     
     if xx < window.width / 2 then

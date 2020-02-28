@@ -15,13 +15,6 @@ mallets =
     blue = love.graphics.newImage("assets/Game/blue_mallet.png"),
   }
 
-boards = 
-  {
-    default = love.graphics.newImage("assets/Boards/Board_Min_Marked.png"),
-    classic = love.graphics.newImage("assets/Boards/Classic_Board_Edged.png"),
-
-  }
-
 function getVid(vid)
   return "assets/Videos/" .. vid .. ".ogg"
 end
@@ -29,28 +22,28 @@ end
 Game = {
   opponents = {
     [1] = {
-      board = boards.default,
+      board = love.graphics.newImage("assets/Boards/Reggy.png"),
       mallet = mallets.blue,
       pre = "intro",
       lose = "reggy-lose",
       win = "reggy-win",
     },
     [2] = {
-      board = boards.classic,
+      board = love.graphics.newImage("assets/Boards/Quartz.png"),
       mallet = mallets.blue,
       pre = "quartz-pre",
       lose = "quartz-lose",
       win = "quartz-win",
     },
     [3] = {
-      board = boards.default,
+      board = love.graphics.newImage("assets/Boards/Little-T.png"),
       mallet = mallets.blue,
       pre = "little-t-pre",
       lose = "little-t-lose",
       win = "little-t-win",
     },
     [4] = {
-      board = boards.classic,
+      board = love.graphics.newImage("assets/Boards/Tiny.png"),
       mallet = mallets.blue,
       pre = "tiny-pre",
       lose = "tiny-lose",
@@ -254,10 +247,11 @@ Game = {
   draw = function(self)
     love.graphics.setColor(1,1,1,0.9)
     
-    local backScale = window.width / boards.default:getWidth()
+    local board = self.opponents[self.opponent].board
+    local backScale = window.width / board:getWidth()
     
     love.graphics.scale(backScale)
-    love.graphics.draw(self.opponents[self.opponent].board,0,0)
+    love.graphics.draw(board,0,0)
     love.graphics.origin()
     
     love.graphics.setColor(1,1,1)

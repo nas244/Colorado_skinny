@@ -134,19 +134,6 @@ function love.update(dt)
   
   actions.skip = #keys(keyp) > 0
   
-  -- DEBUG
-  
-  actions.plus = keyp["+"] or keyp["kp+"]
-  actions.minus = keyp["-"] or keyp["kp-"]
-  
-  actions.shift = keyh.lshift or keyh.rshift
-  
-  actions.increaseSensitivity = actions.plus and not actions.shift
-  actions.decreaseSensitivity = actions.minus and not actions.shift
-  
-  actions.increaseVolume = actions.plus and actions.shift
-  actions.decreaseVolume = actions.minus and actions.shift
-  
   -- Update our game function
   GS.update(dt)
   
@@ -172,9 +159,6 @@ function love.draw(dt)
   GS.draw()
   
   love.graphics.setColor(1,1,1,1)
-  
-  local xx, yy = window.width / 2, window.height / 2
-  love.graphics.line(xx, yy, xx + mouseDraw.x * 5 , yy + mouseDraw.y * 5 )
   
 	love.graphics.scale(window.scale)
   love.graphics.setCanvas()
