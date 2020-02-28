@@ -19,6 +19,7 @@ boards =
   {
     default = love.graphics.newImage("assets/Boards/Board_Min_Marked.png"),
     classic = love.graphics.newImage("assets/Boards/Classic_Board_Edged.png"),
+
   }
 
 Game = {
@@ -31,6 +32,14 @@ Game = {
       board = boards.classic,
       mallet = mallets.blue
     },
+    [3] = {
+      board = boards.default,
+      mallet = mallets.blue
+    },
+    [4] = {
+      board = boards.classic,
+      mallet = mallets.blue
+    }
   },
   
   pauseText = love.graphics.newText(font, ""),
@@ -73,7 +82,7 @@ Game = {
     -- Defined globally /shrug
     puck = Puck()
     leftMallet = LeftMallet()
-    rightMallet = RightMallet()
+    rightMallet = RightMallet(self.opponent)
     
     local wallRestitution = 0.8
     local wallHeight = window.height / 3

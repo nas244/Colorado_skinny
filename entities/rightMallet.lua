@@ -2,7 +2,7 @@ Hump = require "libs.hump.class"
 Vector = require "libs.hump.vector"
 
 RightMallet = Class{
-  init = function(self)
+  init = function(self,opponnum)
     self.img = mallets.blue
     self.name = "rightMallet"
     
@@ -16,11 +16,19 @@ RightMallet = Class{
     self.maxSpeed = 2000
     
     self.score = 0
-    
+    --print(opponnum)
+    self.possiblespeeds = {3,4,4,5}
+    self.possiblerespdis = {3,2,2,2}
+    self.possibleshootingdis = {15,14,12,10}
+    self.mspeed = self.possiblespeeds[opponnum]
+    self.respdis = self.possiblerespdis[opponnum]
+    self.shootingdis = self.possibleshootingdis[opponnum]
+
     self.collider = world:newCircleCollider(self.x + self.w / 2, self.y + self.h / 2, self.w / 2)
     self.collider:setCollisionClass("Mallet")
     self.collider:setMass(10)
     self.collider:setLinearDamping(10)
+    
   end,
   
   update = function(self)
@@ -39,56 +47,52 @@ RightMallet = Class{
       local newY = clamp(py + slope * xx, 0, window.height)
       local goal = (window.height/2-yy)
 
-    local speed = 5
-    local respdis = 2
-    local shootingdis = 10
 
-      if px >= window.width/respdis then
+
+      if px >= window.width/self.respdis then
       
         --If it is close to the puck hit it back to the goal. Kinda Done
         --Should move to block the goal when waiting on a return. Done
         --Fix puck stuck in a corner
 
       if px>xx then
-          if xx>(window.width-window.width/10) then
-            if yy<(window.height/10) or yy>(window.height-window.height/10) then
-              self.collider:applyLinearImpulse(0,0)
-            end
-          elseif shootingdis>=math.abs(pmx-mmx) then
+          if px>(window.width-window.width/12) and (py<(window.height/12) or py>(window.height-window.height/12)) then
+            self.collider:applyLinearImpulse(0,0)
+          elseif self.shootingdis>=math.abs(pmx-mmx) then
             if py>=window.height/2 then
               --print("hitting to lower corner")
-              self.collider:applyLinearImpulse((window.width-xx)*speed,(window.height-yy)*speed)
+              self.collider:applyLinearImpulse((window.width-xx)*self.mspeed,(window.height-yy)*self.mspeed)
             else
               --print("hitting to upper corner")
-              self.collider:applyLinearImpulse((window.width-xx)*speed,(0-yy)*speed)
+              self.collider:applyLinearImpulse((window.width-xx)*self.mspeed,(0-yy)*self.mspeed)
             end
             
           elseif pmx >= 0.5 and pmy >= 0.5 then
             --print("approaching corner")
-            self.collider:applyLinearImpulse((px-xx)*speed,(newY-yy)*speed)
+            self.collider:applyLinearImpulse((px-xx)*self.mspeed,(newY-yy)*self.mspeed)
           else
-            self.collider:applyLinearImpulse((px-xx)*speed,(py-yy)*speed)
+            self.collider:applyLinearImpulse((px-xx)*self.mspeed,(py-yy)*self.mspeed)
           end
        
         
-      elseif shootingdis>=math.abs(pmx-mmx) then
+      elseif self.shootingdis>=math.abs(pmx-mmx) then
         --print("apply momentum")
-        self.collider:applyLinearImpulse(px*-speed,goal*speed)
+        self.collider:applyLinearImpulse(px*-self.mspeed,goal*self.mspeed)
         --self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
       
       elseif pmx <= 0.5 and pmy <= 0.5 then
-        self.collider:applyLinearImpulse((px-xx)*speed,(py-yy)*speed)
+        self.collider:applyLinearImpulse((px-xx)*self.mspeed,(py-yy)*self.mspeed)
 
         elseif pmx <= 0.2 and math.abs(pmy) >= 0.5  then
-          self.collider:applyLinearImpulse((px-xx)*speed,(py-yy)*speed)
+          self.collider:applyLinearImpulse((px-xx)*self.mspeed,(py-yy)*self.mspeed)
 
         else
           --print("change location")
           --self.collider:setPosition(window.width / 1.3  + self.w / 2, newY )
-          self.collider:applyLinearImpulse(((3 * window.width / 4 - self.w / 2)-xx)*speed,(newY-yy)*speed)
+          self.collider:applyLinearImpulse(((3 * window.width / 4 - self.w / 2)-xx)*self.mspeed,(newY-yy)*self.mspeed)
         end
       else
-        self.collider:applyLinearImpulse(((window.width-100)-xx)*speed,((window.height/2)-yy)*speed)
+        self.collider:applyLinearImpulse(((window.width-100)-xx)*self.mspeed,((window.height/2)-yy)*self.mspeed)
       end
       
 
