@@ -22,36 +22,61 @@ boards =
 
   }
 
+function getVid(vid)
+  return "assets/Videos/" .. vid .. ".ogg"
+end
+
 Game = {
   opponents = {
     [1] = {
       board = boards.default,
-      mallet = mallets.blue
+      mallet = mallets.blue,
+      pre = "intro",
+      lose = "reggy-lose",
+      win = "reggy-win",
     },
     [2] = {
       board = boards.classic,
-      mallet = mallets.blue
+      mallet = mallets.blue,
+      pre = "quartz-pre",
+      lose = "quartz-lose",
+      win = "quartz-win",
     },
     [3] = {
       board = boards.default,
-      mallet = mallets.blue
+      mallet = mallets.blue,
+      pre = "little-t-pre",
+      lose = "little-t-lose",
+      win = "little-t-win",
     },
     [4] = {
       board = boards.classic,
-      mallet = mallets.blue
+      mallet = mallets.blue,
+      pre = "tiny-pre",
+      lose = "tiny-lose",
+      win = "tiny-win",
     }
   },
   
   pauseText = love.graphics.newText(font, ""),
   
-  enter = function(self, current, opponent)
-    opponent = opponent or 1
+  enter = function(self, current, skipIntro)
+    skipIntro = skipIntro or false
+    
+    opponent = settings.opponent
     if opponent > #self.opponents then
       GS.switch(Menu)
+      settings.opponent = 1
       return
     end
     
     self.opponent = opponent
+    
+    if not skipIntro then
+      GS.switch( Video, getVid( self.opponents[self.opponent].pre ) )
+      
+      return
+    end
     
     self.optionSelect = 1
     
@@ -66,7 +91,7 @@ Game = {
     
     self.endWin = false
     self.endText = nil
-    self.endTimer = 5 * 60
+    self.endTimer = 5 * 60 / 5
     
     world = wf.newWorld(0, 0, true)
     
@@ -176,7 +201,7 @@ Game = {
       rightMallet:update()
       world:update(dt)
       
-      local scoreMax = 7
+      local scoreMax = 1
       
       if leftMallet.score >= scoreMax then
         self.endText = "You win!"
@@ -206,9 +231,13 @@ Game = {
       
       if self.endTimer <= 0 then
         if self.endWin then
-          GS.switch(Game, self.opponent + 1)
+          GS.switch(Video, getVid( self.opponents[self.opponent].win ), false )
+          
+          settings.opponent = settings.opponent + 1
         else
-          GS.switch(Menu)
+          GS.switch(Video, getVid( self.opponents[self.opponent].lose ))
+          
+          return
         end
       end
     

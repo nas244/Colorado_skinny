@@ -104,6 +104,8 @@ function love.load()
   -- Get our game states
   Game = require "entities.game"
   Menu = require "entities.menu"
+  Video = require "entities.video"
+  
   GS.switch(Menu)
   
   local imgData = love.image.newImageData("assets/Game/red_mallet.png")
@@ -129,6 +131,10 @@ function love.update(dt)
   actions.left = keyp.a or keyp.left
   actions.right = keyp.d or keyp.right
   actions.LR = bti(actions.right) - bti(actions.left)
+  
+  actions.skip = #keys(keyp) > 0
+  
+  -- DEBUG
   
   actions.plus = keyp["+"] or keyp["kp+"]
   actions.minus = keyp["-"] or keyp["kp-"]
