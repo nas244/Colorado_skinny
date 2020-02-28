@@ -17,8 +17,8 @@ RightMallet = Class{
     
     self.score = 0
     --print(opponnum)
-    self.possiblespeeds = {3,4,4,5}
-    self.possiblerespdis = {3,2,2,2}
+    self.possiblespeeds = {5,8,9,10}
+    self.possiblerespdis = {2.5,2,2,2}
     self.possibleshootingdis = {15,14,12,10}
     self.mspeed = self.possiblespeeds[opponnum]
     self.respdis = self.possiblerespdis[opponnum]
@@ -49,18 +49,19 @@ RightMallet = Class{
 
 
 
-      if px >= window.width/self.respdis then
+      if px >= (window.width-window.width/self.respdis) then
       
         --If it is close to the puck hit it back to the goal. Kinda Done
         --Should move to block the goal when waiting on a return. Done
         --Fix puck stuck in a corner
 
       if px>xx then
-          if pmx >= 0.5 and pmy >= 0.5 then
-            --print("approaching corner")
-            self.collider:applyLinearImpulse((px-xx)*self.mspeed,(newY-yy)*self.mspeed)
+          if pmx <= 0.5 and pmy <= 0.5 then
+            print("approaching corner")
+            self.collider:applyLinearImpulse((px-xx)*self.mspeed,(py-yy)*self.mspeed)
           elseif px>(window.width-window.width/12) and (py<(window.height/12) or py>(window.height-window.height/12)) then
-            self.collider:applyLinearImpulse(0,0)
+            --print("waiting for it to come out")
+            self.collider:applyLinearImpulse(((window.width-100)-xx)*self.mspeed*2,((window.height/2)-yy)*self.mspeed*2)
           elseif self.shootingdis>=math.abs(pmx-mmx) then
             if py>=window.height/2 then
               --print("hitting to lower corner")
@@ -79,7 +80,7 @@ RightMallet = Class{
         self.collider:applyLinearImpulse(px*-self.mspeed,goal*self.mspeed)
         --self.collider:setLinearVelocity( Vector(self.collider:getLinearVelocity()):trimmed(self.maxSpeed):unpack() )
       
-      elseif pmx <= 0.5 and pmy <= 0.5 then
+      elseif pmx <= 0.5 and math.abs(pmy) >= 0.5 then
         self.collider:applyLinearImpulse((px-xx)*self.mspeed,(py-yy)*self.mspeed)
 
         elseif pmx <= 0.2 and math.abs(pmy) >= 0.5  then
