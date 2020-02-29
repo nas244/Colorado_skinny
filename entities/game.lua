@@ -195,7 +195,7 @@ Game = {
       rightMallet:update()
       world:update(dt)
       
-      local scoreMax = 1
+      local scoreMax = 7
       
       if leftMallet.score >= scoreMax then
         self.endText = "You win!"
