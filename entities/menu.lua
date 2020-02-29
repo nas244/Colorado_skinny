@@ -28,6 +28,7 @@ buttons = {}
 newButton("New Game",
   function(self, act, lr)
     if act then
+      settings.opponent=1
       GS.switch(Game)
     end
   end)

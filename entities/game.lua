@@ -15,6 +15,13 @@ mallets =
     blue = love.graphics.newImage("assets/Game/blue_mallet.png"),
   }
 
+boards = 
+  {
+    default = love.graphics.newImage("assets/Boards/Board_Min_Marked.png"),
+    classic = love.graphics.newImage("assets/Boards/Classic_Board_Edged.png"),
+
+  }
+
 function getVid(vid)
   return "assets/Videos/" .. vid .. ".ogg"
 end
@@ -22,28 +29,28 @@ end
 Game = {
   opponents = {
     [1] = {
-      board = love.graphics.newImage("assets/Boards/Reggy.png"),
+      board = boards.default,
       mallet = mallets.blue,
       pre = "intro",
       lose = "reggy-lose",
       win = "reggy-win",
     },
     [2] = {
-      board = love.graphics.newImage("assets/Boards/Quartz.png"),
+      board = boards.classic,
       mallet = mallets.blue,
       pre = "quartz-pre",
       lose = "quartz-lose",
       win = "quartz-win",
     },
     [3] = {
-      board = love.graphics.newImage("assets/Boards/Little-T.png"),
+      board = boards.default,
       mallet = mallets.blue,
       pre = "little-t-pre",
       lose = "little-t-lose",
       win = "little-t-win",
     },
     [4] = {
-      board = love.graphics.newImage("assets/Boards/Tiny.png"),
+      board = boards.classic,
       mallet = mallets.blue,
       pre = "tiny-pre",
       lose = "tiny-lose",
@@ -194,7 +201,7 @@ Game = {
       rightMallet:update()
       world:update(dt)
       
-      local scoreMax = 7
+      local scoreMax = 1
       
       if leftMallet.score >= scoreMax then
         self.endText = "You win!"
@@ -205,15 +212,19 @@ Game = {
         
       end
     else
-      self.optionSelect = keepBetween(self.optionSelect + actions.UD, 1, 3)
+      self.optionSelect = keepBetween(self.optionSelect + actions.UD, 1, 4)
       
       if actions.start then
         if self.optionSelect == 1 then
           actions.pause = true
         elseif self.optionSelect == 2 then
+          save_data="settings.opponent="..tostring(settings.opponent)
+          success=love.filesystem.write("save.txt",save_data)
+          print(success)
+        elseif self.optionSelect == 3 then
           self:leave()
           self:enter()
-        elseif self.optionSelect == 3 then
+        elseif self.optionSelect == 4 then
           GS.switch(Menu)
         end
       end
@@ -247,11 +258,10 @@ Game = {
   draw = function(self)
     love.graphics.setColor(1,1,1,0.9)
     
-    local board = self.opponents[self.opponent].board
-    local backScale = window.width / board:getWidth()
+    local backScale = window.width / boards.default:getWidth()
     
     love.graphics.scale(backScale)
-    love.graphics.draw(board,0,0)
+    love.graphics.draw(self.opponents[self.opponent].board,0,0)
     love.graphics.origin()
     
     love.graphics.setColor(1,1,1)
@@ -300,8 +310,8 @@ Game = {
       
       love.graphics.setFont(smallFont)
       
-      local pauseOptions = {"Continue", "Restart", "Quit"}
-      for i = 0,2 do
+      local pauseOptions = {"Continue","Save", "Restart", "Quit"}
+      for i = 0,3 do
         local opt = pauseOptions[i + 1]
         if self.optionSelect == i + 1 then
           opt = "* " .. opt

@@ -19,6 +19,12 @@ settings = {
   opponent = 1,
 }
 
+chunk, errormsg = love.filesystem.load("save.txt")
+
+if chunk then
+  chunk()
+end
+
 -- Configure to use console output
 function love.conf(t)
 	t.console = true
