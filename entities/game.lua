@@ -13,13 +13,7 @@ mallets =
   {
     red = love.graphics.newImage("assets/Game/red_mallet.png"),
     blue = love.graphics.newImage("assets/Game/blue_mallet.png"),
-  }
-
-boards = 
-  {
-    default = love.graphics.newImage("assets/Boards/Board_Min_Marked.png"),
-    classic = love.graphics.newImage("assets/Boards/Classic_Board_Edged.png"),
-
+    tiny = love.graphics.newImage("assets/Game/tiny.png"),
   }
 
 function getVid(vid)
@@ -29,29 +23,29 @@ end
 Game = {
   opponents = {
     [1] = {
-      board = boards.default,
+      board = love.graphics.newImage("assets/Boards/Reggy.png"),
       mallet = mallets.blue,
       pre = "intro",
       lose = "reggy-lose",
       win = "reggy-win",
     },
     [2] = {
-      board = boards.classic,
+      board = love.graphics.newImage("assets/Boards/Quartz.png"),
       mallet = mallets.blue,
       pre = "quartz-pre",
       lose = "quartz-lose",
       win = "quartz-win",
     },
     [3] = {
-      board = boards.default,
+      board = love.graphics.newImage("assets/Boards/Little-T.png"),
       mallet = mallets.blue,
       pre = "little-t-pre",
       lose = "little-t-lose",
       win = "little-t-win",
     },
     [4] = {
-      board = boards.classic,
-      mallet = mallets.blue,
+      board = love.graphics.newImage("assets/Boards/Tiny.png"),
+      mallet = mallets.tiny,
       pre = "tiny-pre",
       lose = "tiny-lose",
       win = "tiny-win",
@@ -107,7 +101,7 @@ Game = {
     -- Defined globally /shrug
     puck = Puck()
     leftMallet = LeftMallet()
-    rightMallet = RightMallet(self.opponent)
+    rightMallet = RightMallet(self.opponent, self.opponents[self.opponent].mallet)
     
     local wallRestitution = 0.8
     local wallHeight = window.height / 3
@@ -258,24 +252,28 @@ Game = {
   draw = function(self)
     love.graphics.setColor(1,1,1,0.9)
     
-    local backScale = window.width / boards.default:getWidth()
+    local board = self.opponents[self.opponent].board
+    
+    local backScale = window.width / board:getWidth()
     
     love.graphics.scale(backScale)
-    love.graphics.draw(self.opponents[self.opponent].board,0,0)
+    love.graphics.draw(board,0,0)
     love.graphics.origin()
     
     love.graphics.setColor(1,1,1)
+    
+    love.graphics.setLineWidth(5)
+    love.graphics.setColor(0,0,0)
+    world:draw(0.5)
     
     if puck then
       puck:draw()
     end
     
+    love.graphics.setColor(1,1,1)
+    
     leftMallet:draw()
     rightMallet:draw()
-    
-    love.graphics.setLineWidth(5)
-    love.graphics.setColor(0,0,0)
-    world:draw(0.5)
     
     love.graphics.setFont(font)
     love.graphics.setColor(1,0.2,0.2, 1)

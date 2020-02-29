@@ -2,8 +2,8 @@ Hump = require "libs.hump.class"
 Vector = require "libs.hump.vector"
 
 RightMallet = Class{
-  init = function(self,opponnum)
-    self.img = mallets.blue
+  init = function(self,opponnum,mallet)
+    self.img = mallet or mallets.blue
     self.name = "rightMallet"
     
     self.h = self.img:getWidth() - 10
